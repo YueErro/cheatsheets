@@ -1,5 +1,9 @@
 # GitHub cheat sheet
 
+```sh
+sudo apt install git
+```
+
 ## Table of contents
 * [Setup](#Setup)
 * [Create repositories](#Create-repositories)
