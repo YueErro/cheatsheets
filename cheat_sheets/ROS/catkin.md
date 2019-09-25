@@ -1,10 +1,11 @@
 # catkin cheat sheet
+Assuming the catkin workespace is in `~/catkin_ws`, you are located there and the corresponding ROS distribution is already sourced (. devel/setup.bash) .
 
 ## Table of contents
 * [catkin_make](#catkin_make)
 * [catkin_tools](#catkin_tools)
 
-_Assuming the catkin workespace is in `~/catkin_ws`, you are located there and the corresponding ROS distribution is already sourced._
+**Note:** To ignore a package, place a `CATKIN_IGNORE` file in that package.
 
 ### catkin_make
 ```sh
@@ -15,7 +16,7 @@ catkin_make --pkg pkg1 pkg2
 # To install target
 catkin_make install
 ```
-_Replace `catkin_make` by `catkin_make_isolated` if isolated build process wanted, wherein each package is independently configured, built, and loaded into the environment._
+_Replace `catkin_make` by `catkin_make_isolated` if isolated build process wanted, wherein each package is independently configured, built, and loaded into the environment. It allows `catkin_make_isolated --merge` for build each catkin package into a common devel space._
 
 ### catkin_tools
 ```sh
@@ -33,5 +34,3 @@ wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
 sudo apt update
 sudo apt install python-catkin-tools
 ```
-
-**Note:** To ignore a package, place a `CATKIN_IGNORE` file in that package.

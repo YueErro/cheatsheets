@@ -1,5 +1,4 @@
-# GitHub cheat sheet
-
+# git cheat sheet
 ```sh
 sudo apt install git
 ```
