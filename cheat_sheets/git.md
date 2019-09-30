@@ -83,7 +83,7 @@ git push
 # Pull from the repository
 git pull --recurse-submodules
 # Pull from each submodule
-git submodule update --remote
+git submodule update --recursive --remote
 ```
 
 ### Commits

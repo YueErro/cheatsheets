@@ -6,6 +6,7 @@ Assuming the corresponding ROS distribution is already sourced (. /opt/ros/<dist
   * [catkin_make](#catkin_make)
   * [catkin_tools](#catkin_tools)
 * [Create a catkin package](#Create-a-catkin-package)
+* [Release new version of catkin package](#Release-new-version-of-catkin-package)
 
 ### Create a workspace for catkin
 ```sh
@@ -35,6 +36,7 @@ catkin build <pkg1> <pkg2>
 # To clean specific packages in ~/catkin_ws/build and ~/catkin_ws/devel
 catkin clean <pkg1> <pkg2>
 ```
+
 Installation:
 ```sh
 sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu `lsb_release -sc` main" > /etc/apt/sources.list.d/ros-latest.list'
@@ -47,4 +49,14 @@ sudo apt install python-catkin-tools
 ```sh
 cd ~/catkin_ws/src
 catkin_create_pkg <package> <depend1> <depend2>
+```
+
+### Release new version of catkin package
+```sh
+# Generate CHANGELOG.rst file in each catkin package
+catkin_generate_changelog
+# Check each catkin package has its changelog, increment the version in the package.xml and commit/tag the changes
+catkin_prepare_release
+# PR of the release
+bloom-release <repo> --rosdistro <distro>
 ```
