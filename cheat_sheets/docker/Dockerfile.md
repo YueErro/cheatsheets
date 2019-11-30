@@ -32,4 +32,4 @@ STOPSIGNAL SIGKILL
 EXPOSE <port>
 ```
 
-**It should specify at leat one of `CDM` or `ENTRYPOINT` commands.**
+**It should specify at least one `CDM` or `ENTRYPOINT` command.**

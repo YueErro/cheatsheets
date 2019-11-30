@@ -4,7 +4,6 @@
 sudo apt install python-catkin-lint
 # Make sure the catking workspace is already sourced (. devel/setup.bash)
 catkin_lint --pkg <pkg>
-
 ```
 
 ## Table of contents
@@ -23,7 +22,7 @@ catkin_lint --pkg <pkg>
   <description>mypkg provides...</description>
   <author email="yue.trbj@gmail.com">Yue Erro</author>
   <maintainer email="yue.trbj@gmail.com">Yue Erro</maintainer>
-  <!--BDS, Apache 2.0, GPLv3, ...-->
+  <!--Apache 2.0, GPLv3, ...-->
   <license>BDS</license>
 
   <!--Build Tool Dependencies, build system tools which this pkg needs to build itself, typically only catkin-->
@@ -35,30 +34,39 @@ catkin_lint --pkg <pkg>
   <!--Execution Dependencies, pkgs needed to run code in this pkg, especially the catkin_package(DEPENDS)-->
   <!--Equivalent to <run_depend></run_depend> in format="1"-->
   <exec_depend>message_runtime</exec_depend>
-  <exec_depend>gazebo_ros</exec_depend>
   <exec_depend>rospy</exec_depend>
   <exec_depend>urdf</exec_depend>
-  <!--If build, export and execution dependencies are needed use this one-->
+  <!--If build and execution dependencies are needed use this one-->
+  <depend>gazebo_ros</depend>
   <depend>gazebo_dev</depend>
   <depend>roscpp</depend>
   <depend>std_msgs</depend>
   <!--Using custom message from different pkg-->
   <depend>msgpkg</depend>
-  <!--Test Dependencies, for unit tests, never duplicate mentioned as build or run dependencies-->
+  <!--Test Dependencies, for unit tests, never duplicate mentioned as build or exec dependencies-->
   <test_depend>rosbag</test_depend>
   <!--Documentation Tool Dependencies, documentation tools which this pkg needs to generate documentation-->
   <doc_depend>doxygen</doc_depend>
+  <!--Container for additional information for various packages and subsystems need to embed-->
+  <export>
+    <gazebo_ros plugin_path="${prefix}/lib" gazebo_media_path="${prefix}" />
+  </export>
 </package>
 ```
+
+Install system dependencies required by the ROS package in package.xml:
+`rosdep install <pkg>`
 
 ### CMakeLists.txt
 ```cmake
 # EXAMPLE
-
 cmake_minimum_required(VERSION 2.8.3)
 
 # Equals to package.xml name tag
 project(mypkg)
+
+# Compile as C++11, supported in ROS Kinetic and newer
+add_compile_options(-std=c++11)
 
 find_package(catkin REQUIRED
   COMPONENTS message_generation roscpp std_msgs gazebo_dev gazebo_ros
@@ -152,3 +160,4 @@ endif()
   </node>
 </launch>
 ```
+Run the roslaunch file: `roslaunch <pkg> <launchfile> <argname>:=<value>`

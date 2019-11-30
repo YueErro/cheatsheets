@@ -1,9 +1,9 @@
-# ros cheat sheet
+# ROS cheat sheet
 Assuming the corresponding ROS environment is already sourced (. devel/setup.bash).
 
 ## Table of contents
 * [Filesystem management](#Filesystem-management)
-* [Start-up and process launch](#Start---up-and-procees-launch)
+* [Start-up and process launch](#Start---up-and-process-launch)
 * [Running system](#Running-system)
   * [rosnode](#rosnode)
   * [rostopic](#rostopic)
@@ -36,7 +36,7 @@ rosdep install --from-paths src --ignore-src -r -y
 ```sh
 # If you specify a port, -p <port>, export ROS_MASTER_URI=http://lohalhost:<port>
 roscore
-# Run an executable
+# Run an executable from a ROS package
 rosrun <pkg> <executable> <parameter>:=<value>
 # Launch nodes form launch file and it starts a roscore if needed
 roslaunch <pkg> <launchfile>
@@ -45,86 +45,86 @@ roslaunch <pkg> <launchfile>
 ### Running system
 #### rosnode
 ```sh
-# List active nodes
+# List active ROS nodes
 rosnode list
 # Test connectivity, use --all to ping all
 rosnode ping
-# Get information about the specific node
+# Get information about the specific ROS node
 rosnode info <node>
-# Kill the specific node, use -a to kill all
+# Kill the specific ROS node, use -a to kill all
 rosnode kill <node>
 ```
 
 #### rostopic
 ```sh
-# List currently published or subscribed topics, use -v to list publishers and subscribers as well
+# List currently published or subscribed ROS topics, use -v to list publishers and subscribers as well
 rostopic list
-# Get information about the specific topic
+# Get information about the specific ROS topic
 rostopic info <topic>
-# Display messages published to the specific topic
+# Display messages published to the specific ROS topic
 rostopic echo <topic>
-# Get puvlishing rate of the specific topic
+# Get publishing rate of the specific ROS topic
 rostopic hz <topic>
-# Get type of the specific topic
+# Get type of the specific ROS topic
 rostopic type <topic>
-# Find topic by type
+# Find ROS topic by type
 rostopic find <type>
-# Publish data to a specific topic, use -1 to publish only once
+# Publish data to a specific ROS topic, use -1 to publish only once
 rostopic pub -1 <topic> <msgtype> <args>
 ```
 
 #### rosservice
 ```sh
-# List active services
+# List active ROS services
 rosservice list
-# Get information about the specific service
+# Get information about the specific ROS service
 rosservice info <service>
-# Get the name of the node that provides the specific service
+# Get the name of the node that provides the specific ROS service
 rosservice node <service>
-# Get type of the specific service
+# Get type of the specific ROS service
 rosservice type <service>
-# Find service by type
+# Output ROS services of the given type
 rosservice find <type>
-# List arguments of the specific service
+# List arguments of the specific ROS service
 rosservice args <service>
-# Call specific service request
+# Call specific ROS service request
 rosservice call <service> <args>
 ```
 
 #### rosparam
 ```sh
-# List parameter names
+# List ROS parameter names
 rosparam list
-# Get the specific parameter
+# Get the specific ROS parameter
 rosparam get <param>
-# Set the specific parameter to the specific value
+# Set the specific ROS parameter to the specific value
 rosparam set <param> <value>
-# Delete the specific parameter
+# Delete the specific ROS parameter
 rosparam delete <param>
 ```
 
 #### rosmsg and rossrv
 ```sh
-# List of all messages types
+# List ROS messages types
 rosmsg list
-# Get the fields of the specific message type
+# Get the fields of the specific ROS message type
 rosmsg show <type>
-# List all the packages containing the specific message type
+# List all the packages containing the specific ROS message type
 rosmsg packages <type>
 ```
 _The commands above can be apply to ROS service as well. Just replace `rosmsg` by `rossrv`._
 
 #### rosbag
 ```sh
-# Record all messages from specific topics into specific (-0) file, use -l <val> to set a maximum messages to be recorded from each topics
+# Record all ROS messages from specific ROS topics into specific (-0) file, use -l <val> to set a maximum messages to be recorded from each topics
 rosbag record -0 <file> <topic1> <topic2>
-# Replay all the messages in the specific .bag files, use -r <value> to change the rate
+# Replay all the ROS messages in the specific ROS .bag files, use -r <value> to change the rate
 rosbag play <file1> <file2>
-# Get information about the specific .bag file
+# Get information about the specific ROS .bag file
 rosbag info <file>
-# Compress the specific .bag file using BZ2
+# Compress the specific ROS .bag file using BZ2
 rosbag compress <file>
-# Decompress the specific .bag file
+# Decompress the specific ROS .bag file
 rosbag decompress <file>
 ```
 
