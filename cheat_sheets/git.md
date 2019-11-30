@@ -97,6 +97,10 @@ git reset --soft <commit>
 git reset <commit>
 # Reset to remove the commit from everywhere
 git reset --hard <commit>
+# Or number of commits to remove
+git reset --hard HEAD~<numcommints>
+# Force push
+git push origin HEAD --force
 # Cherry-pick a commit from somewhere else to current branch
 git cherry-pick <commit>
 # Ignore already committed file, then add it to .gitignore
