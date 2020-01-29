@@ -88,6 +88,7 @@ git submodule update --recursive --remote
 
 ### Commits
 ```sh
+# List commits
 git log
 # Revert with a new commit
 git revert <commit>
@@ -115,13 +116,16 @@ git rm --cached <file>
 
 ### Branches
 ```sh
+# List branches
 git branch -a
 # Create and switch to the new one
 git checkout -b <branch>
+# Rename a branch
+git branch -m <old> <new>
 # Locally ( -D force delete)
 git branch -d <branch>
-# Remotely (: force delete instead of --delete)
-git push <remote> --delete <branch>
+# In the first push
+git push -u origin <branch>
 # Merge into the current branch (usually master) the specified one
 git merge <branch>
 # Rebase into the current branch the specified one (usually master)

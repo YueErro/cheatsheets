@@ -98,7 +98,7 @@ add_action_files(DIRECTORY action FILES
 generate_messages(DEPENDENCIES std_msgs)
 
 catkin_package(
-  INCLUDE_DIRS include # mypkg/include/*.hpp
+  INCLUDE_DIRS include # mypkg/include/myotherpkg/*.hpp
   LIBRARIES ${PROJECT_NAME} # mypkg
   CATKIN_DEPENDS message_runtime roscpp std_msgs gazebo_dev gazebo_ros
   DEPENDS opencv
