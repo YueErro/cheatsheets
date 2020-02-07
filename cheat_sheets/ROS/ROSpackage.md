@@ -15,6 +15,9 @@ catkin_lint --pkg <pkg>
 * [python scripts](#python-scripts)
 * [src](#src)
 * [rossrv](#rossrv)
+* [tests](#tests)
+  * [gtest](#gtest)
+  * [unittest](#unittest)
 * [CMakeLists.txt](#CMakeLists-.-txt)
 * [package.xml](#package-.-xml)
 * [Summary structure](#Summary-structure)
@@ -84,7 +87,7 @@ For generating a new ROS message (message definition), create a new `msg/` direc
 ```
 
 ### Python scripts
-Python scripts are placed in `scripts/'` as `<my_py>.py`.
+Python scripts are placed in `scripts/` as `<my_py>.py`.
 
 ### src
 C++ cpp files containing the implementation are placed in `src/` as `<my_cpp>.cpp`.
@@ -107,6 +110,56 @@ For generating a new ROS srv (service definition), creat a new `srv/` directory 
 // ...
 ```
 
+### tests
+
+#### gtest
+C++ tests for ROS packages involve Google's gtest framework (without rostest) and will be located at `test/` folder as `<my_test>.cpp`:
+```cpp
+#include "<my_ROSpackage>/<my_header>.h"
+
+#include <gtest/gtest.h>
+
+TEST(<MyTestGroup>, <myTestName>){
+  // ASSERT_* and/or EXPECT_* calls been first parameter commonly expected value
+}
+
+// more TESTs ...
+
+int main(int argc, char **argv){
+  ros::init(argc, argv, "<my_test>");
+  ros::NodeHandle nh;
+
+  testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
+}
+
+```
+
+ASSERT_* aborts executions while EXPECT_* don't.
+
+#### unittest
+Python tests for ROS packages are based on Python unittest framework and will be placed at `test/` folder as `<my_test>.py`:
+
+```py
+#!/usr/bin/env python
+
+PKG = 'my_ROSpackage'
+NAME = 'test_name'
+
+import sys
+import rosunit
+import unittest
+
+class TestName(unittest.TestCase):
+  def test_name(self): // only functions with 'test_' prefix will be run
+    // self.assert*
+
+if __name__ == '__main__':
+  rostest.rosrun(PKG, NAME, TestName, sys.argv)
+```
+
+`rosrun rosunit rosunit --name <test_name>`
+
 ### CMakeLists.txt
 ```cmake
 # EXAMPLE
@@ -118,8 +171,11 @@ project(mypkg)
 # Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
 
-find_package(catkin REQUIRED
-  COMPONENTS message_generation roscpp std_msgs
+find_package(catkin REQUIRED actionlib_msgs COMPONENTS
+  roscpp
+  rospy
+  std_msgs
+  message_generation
 )
 find_package(Boost REQUIRED
   COMPONENTS thread
@@ -143,12 +199,12 @@ add_action_files(DIRECTORY action FILES
   MyAc1.action
 )
 
-generate_messages(DEPENDENCIES std_msgs)
+generate_messages(DEPENDENCIES actionlib_msgs std_msgs)
 
 catkin_package(
   INCLUDE_DIRS include # mypkg/include/myotherpkg/*.h
   LIBRARIES ${PROJECT_NAME} # mypkg
-  CATKIN_DEPENDS message_runtime roscpp std_msgs
+  CATKIN_DEPENDS roscpp rospy std_msgs message_runtime
 )
 
 include_directories(
@@ -175,8 +231,13 @@ catkin_install_python(PROGRAMS
 )
 
 if(CATKIN_ENABLE_TESTING)
-  catkin_add_gtest(mytest test/mytest.cpp)
+  catkin_add_gtest(${PROJECT_NAME}_test test/my_test.cpp)
 endif()
+if(TARGET ${PROJECT_NAME}_test)
+  target_link_libraries(${PROJECT_NAME}_test ${PROJECT_NAME})
+endif()
+
+catkin_add_nosetests(test/my_test.py)
 ```
 
 ### package.xml
@@ -190,19 +251,23 @@ endif()
   <description>mypkg provides...</description>
   <author email="yue.trbj@gmail.com">Yue Erro</author>
   <maintainer email="yue.trbj@gmail.com">Yue Erro</maintainer>
+  <url type="website">http://wiki.ros.org/mypkg</url>
+  <url type="repository">https://github.com/YueErro/cheatsheets</url>
+  <url type="bugtracker">https://github.com/YueErro/cheatsheets/issues</url>
   <!--BDS, Apache 2.0, GPLv3, ...-->
   <license>Proprietary</license>
-
   <!--Build Tool Dependencies, build system tools which this pkg needs to build itself, typically only catkin-->
   <buildtool_depend>catkin</buildtool_depend>
   <!--Build Dependencies, build time pkgs to build this pkg, especially the ones in find_package()-->
+  <build_depend>actionlib_msgs</build_depend>
   <build_depend>message_generation</build_depend>
-  <!--Build Export Dependencies, pkgs needed to build libraries against this pkg, especially the catkin_package(DEPENDS)-->
-  <build_export_depend></build_export_depend>
   <!--Execution Dependencies, pkgs needed to run code in this pkg, especially the catkin_package(DEPENDS)-->
   <!--Equivalent to <run_depend></run_depend> in format="1"-->
-  <exec_depend>message_runtime</exec_depend>
   <exec_depend>rospy</exec_depend>
+  <exec_depend>actionlib_msgs</exec_depend>
+  <exec_depend>message_runtime</exec_depend>
+  <!--Build Export Dependencies, pkgs needed to build libraries against this pkg, especially the catkin_package(DEPENDS)-->
+  <build_export_depend></build_export_depend>
   <!--If three of the previous dependencies are needed use this one-->
   <depend>roscpp</depend>
   <depend>std_msgs</depend>
@@ -210,6 +275,7 @@ endif()
   <depend>msgpkg</depend>
   <!--Test Dependencies, for unit tests, never duplicate mentioned as build or exec dependencies-->
   <test_depend>rosbag</test_depend>
+  <test_depend>rosunit</test_depend>
   <!--Documentation Tool Dependencies, documentation tools which this pkg needs to generate documentation-->
   <doc_depend>doxygen</doc_depend>
   <!--Container for additional information for various packages and subsystems need to embed-->
@@ -225,23 +291,26 @@ Install system dependencies required by the ROS package in package.xml:
 ```
 .
 |__ <my_ROSpackage>
+    |__ action
+    |   |__ <my_action>.action
     |__ config
     |   |__ <my_config>.yaml
     |__ include
     |   |__ <my_ROSpackage>
     |       |__ <my_header>.h
-    |__ msg
-    |   |__ <my_msg>.msg
-    |__ srv
-    |   |__ <my_srv>.srv
-    |__ action
-    |   |__ <my_action>.action
     |__ launch
     |   |__ <my_launch>.launch
+    |__ msg
+    |   |__ <my_msg>.msg
     |__ scripts
     |   |__ <my_py>.py
     |__ src
     |   |__ <my_cpp>.cpp
+    |__ srv
+    |   |__ <my_srv>.srv
+    |__ test
+    |   |__ <my_test>.cpp
+    |   |__ <my_test>.py
     |__ CMakeLists.txt
     |__ package.xml
 ```
