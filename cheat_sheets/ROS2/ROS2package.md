@@ -11,10 +11,14 @@
 <!--Using recommended format-->
 <package format="2">
   <name>mypkg</name>
+  <!--MAJOR_API.MINOR_ABI.PATCH -->
   <version>0.0.1</version>
   <description>mypkg provides...</description>
   <author email="yue.trbj@gmail.com">Yue Erro</author>
   <maintainer email="yue.trbj@gmail.com">Yue Erro</maintainer>
+  <url type="website">http://wiki.ros.org/mypkg</url>
+  <url type="repository">https://github.com/YueErro/cheatsheets</url>
+  <url type="bugtracker">https://github.com/YueErro/cheatsheets/issues</url>
   <!--BDS, GPLv3, ...-->
   <license>Apache License 2.0</license>
   <!--Build Tool Dependencies, build system tools which this pkg needs to build itself-->
@@ -28,6 +32,8 @@
   <!--Test Dependencies, for unit tests-->
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
+  <!--Documentation Tool Dependencies, documentation tools which this pkg needs to generate documentation-->
+  <doc_depend>doxygen</doc_depend>
   <!--Container for additional information for various packages and subsystems need to embed-->
   <export>
     <build_type>ament_cmake</build_type>
@@ -111,6 +117,8 @@ ament_package()
 ```
 
 ### ros2 launch Python3
+In `launch/<my_launch>.launch.py`:
+
 ```python
 # EXAMPLE
 import os

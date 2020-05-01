@@ -56,7 +56,9 @@ catkin_create_pkg <package> <depend1> <depend2>
 # Generate CHANGELOG.rst file in each catkin package
 catkin_generate_changelog
 # Check each catkin package has its changelog, increment the version in the package.xml and commit/tag the changes
-catkin_prepare_release
+catkin_prepare_release                # PATCH
+catkin_prepare_release --bump minor   # ABI
+catkin_prepare_release --bump major   # API
 # PR of the release
 bloom-release <repo> --rosdistro <distro>
 ```
