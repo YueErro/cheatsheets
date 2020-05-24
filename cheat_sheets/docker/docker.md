@@ -27,16 +27,15 @@ newgrp docker
 ```sh
 # Create container from image
 docker create <image>
-# Start container
-docker start <container>
 # Build image from the Dockerfile
 docker build -t <image> <path>
 # Create and start the docker
-docker run --rm -it -p <port>:<EXPOSEport>  -v <localpath>:<containerpath> --name <container> <image>
+docker run --rm -it -p <port>:<EXPOSEport>  -v <localpath>:<containerpath> <image>
 # --rm remove container automatically after it exits
 # -it connect container to terminal
 # -p port
-# -v volume share data between them, localparh is usually `pwd`
+# -v volume share data between them, localpath is usually `pwd`
+# --name <container>
 ```
 
 ### Management
@@ -46,17 +45,19 @@ docker info
 # List running containers, use -a to include stopped images
 docker ps
 # Execute a command in the container
-docker exec <name> <command>
+docker exec <container> <command>
+# Start container
+docker start <container>
 # Stop container through SIGTERM
-docker stop <name/id>
+docker stop <container>
 # Stop container through SiGKILL
-docker kill <name/id>
+docker kill <container>
 # Remove container, use -v to remove associated volumes
-docker rm -f <name/id>
+docker rm -f <container>
 # List images
 docker images
 # Remove image
-docker rmi -f <name/id>
+docker rmi -f <container>
 ```
 
 ### Network
@@ -75,6 +76,10 @@ docker run -it --name <container> --ip <ip> --net <network> <image>
 docker login
 # Download the image
 docker pull <user>/<image>:<tag>
+# Create a new image from a container’s changes
+docker commit <container> <newimage>:<tag>
+# Copy files/folders between container and the local file system
+docker cp <localpath> <container>:<containerpath>
 # Upload the image
 docker push <user>/<image>:<tag>
 # Add tag to the image

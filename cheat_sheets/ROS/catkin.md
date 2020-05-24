@@ -33,8 +33,14 @@ _Replace `catkin_make` by `catkin_make_isolated` if isolated build process wante
 catkin build
 # To build specific packages in ~/catkin_ws/src
 catkin build <pkg1> <pkg2>
+# To clean all the build products
+catkin clean
 # To clean specific packages in ~/catkin_ws/build and ~/catkin_ws/devel
 catkin clean <pkg1> <pkg2>
+# To run all the tests in the packages
+catkin run_tests
+# To run the current package
+catkin run_tests --no-deps --this
 ```
 
 Installation:
