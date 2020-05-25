@@ -98,6 +98,8 @@ git reset --hard HEAD~<numcommints>
 git push origin HEAD --force
 # Cherry-pick a commit from somewhere else to current branch
 git cherry-pick <commit>
+# Cherry-pick before commiting in order to insepct and modify, the commit message will have been stored
+git cherry-pick -n <commit>
 # Ignore already committed file, then add it to .gitignore
 git rm --cached <file>
 ```
