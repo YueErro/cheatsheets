@@ -138,6 +138,8 @@ git push --force-with-lease
 git merge <branch>
 # Rebase into the current branch the specified one (usually master)
 git rebase <branch>
+# Remove local branches not existing remotely
+git remote prune origin
 ```
 *`git checkout -b <branch>` is equivalent to `git branch <branch> && git checkout <branch>`.*
 
