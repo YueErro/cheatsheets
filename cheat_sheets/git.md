@@ -12,7 +12,7 @@ sudo apt install tig
 * [Create repositories](#Create-repositories)
 * [Remote](#Remote)
 * [Basics](#Basics)
-* [Stage/Unstage](#Stage/Unstage)
+* [Stage/Unstage](#stageunstage)
 * [Commits](#Commits)
 * [Branches](#Branches)
 * [Stash](#Stash)

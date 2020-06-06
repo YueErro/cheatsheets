@@ -1,8 +1,8 @@
 # ROS 2 package cheat sheet
 
 ## Table of contents
-* [package.xml](#package-.-xml)
-* [CMakeLists.txt](#CMakeLists-.-txt)
+* [package.xml](#packagexml)
+* [CMakeLists.txt](#cmakeliststxt)
 * [ros2 launch Python3](#ros2-launch-Python3)
 
 ### package.xml

@@ -18,8 +18,8 @@ catkin_lint --pkg <pkg>
 * [tests](#tests)
   * [gtest](#gtest)
   * [unittest](#unittest)
-* [CMakeLists.txt](#CMakeLists-.-txt)
-* [package.xml](#package-.-xml)
+* [CMakeLists.txt](#cmakeliststxt)
+* [package.xml](#packagexml)
 * [Summary structure](#Summary-structure)
 
 ### actionlib

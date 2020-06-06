@@ -3,7 +3,7 @@ Assuming the corresponding ROS environment is already sourced (. devel/setup.bas
 
 ## Table of contents
 * [Filesystem management](#Filesystem-management)
-* [Start-up and process launch](#Start---up-and-process-launch)
+* [Start-up and process launch](#start-up-and-process-launch)
 * [Running system](#Running-system)
   * [rosnode](#rosnode)
   * [rostopic](#rostopic)

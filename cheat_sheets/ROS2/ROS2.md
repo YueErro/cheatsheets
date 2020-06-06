@@ -4,7 +4,7 @@ Assuming the corresponding ROS 2 environment is already sourced (. install/setup
 ## Table of contents
 * [Filesystem management](#Filesystem-management)
   * [ros2 pkg](#ros2-pkg)
-* [Process launch](Process-launch)
+* [Process launch](#process-launch)
 * [Running system](#Running-system)
   * [ros2 node](#ros2-node)
   * [ros2 topic](#ros2-topic)
