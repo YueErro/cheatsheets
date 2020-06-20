@@ -41,6 +41,14 @@ catkin clean <pkg1> <pkg2>
 catkin run_tests
 # To run the current package
 catkin run_tests --no-deps --this
+# Make a new profile in order to build with a different configuration
+catkin config --profile <profile> -x _<profile>
+# Build a specific profile
+catkin build --profile <profile>
+# Clean a specific profile
+catkin clean --profile <profile>
+# Remove profile (you can also list, set, add and rename a profile)
+catkin profile remove <profile>
 ```
 
 Installation:
