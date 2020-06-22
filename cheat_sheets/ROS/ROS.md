@@ -116,8 +116,8 @@ _The commands above can be apply to ROS service as well. Just replace `rosmsg` b
 
 #### rosbag
 ```sh
-# Record all ROS messages from specific ROS topics into specific (-0) file, use -l <val> to set a maximum messages to be recorded from each topics
-rosbag record -0 <file> <topic1> <topic2>
+# Record all ROS messages use -a, from specific ROS topics into specific file -O and use -l <val> to set a maximum messages to be recorded from each topics
+rosbag record -O <file> <topic1> <topic2>
 # Replay all the ROS messages in the specific ROS .bag files, use -r <value> to change the rate
 rosbag play <file1> <file2>
 # Get information about the specific ROS .bag file
@@ -136,9 +136,10 @@ rqt
 rqt_console
 # GUI to visualize, inspect and replay the specific .bag file
 rqt_bag <file>
+# GUI where a topic's values are plot
+rqt_plot
 # Provides a GUI for vizualizing the ROS computation graph
 rqt_graph
-
 ```
 
 ### URDF and xacro

@@ -171,6 +171,7 @@ project(mypkg)
 # Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
 
+# pkgs that you have #include in your .h and they have to be added as <build_depend>
 find_package(catkin REQUIRED actionlib_msgs COMPONENTS
   roscpp
   rospy
@@ -201,6 +202,7 @@ add_action_files(DIRECTORY action FILES
 
 generate_messages(DEPENDENCIES actionlib_msgs std_msgs)
 
+# CATKIN_DEPENDS pkgs have to be added as <build_export_depend>, they are #include in a header that others can use
 catkin_package(
   INCLUDE_DIRS include # mypkg/include/myotherpkg/*.h
   LIBRARIES ${PROJECT_NAME} # mypkg
@@ -261,12 +263,12 @@ catkin_add_nosetests(test/my_test.py)
   <!--Build Dependencies, build time pkgs to build this pkg, especially the ones in find_package()-->
   <build_depend>actionlib_msgs</build_depend>
   <build_depend>message_generation</build_depend>
-  <!--Execution Dependencies, pkgs needed to run code in this pkg, especially the catkin_package(DEPENDS)-->
+  <!--Execution Dependencies, pkgs needed to run code in this pkg, especially the catkin_package(CATKIN_DEPENDS)-->
   <!--Equivalent to <run_depend></run_depend> in format="1"-->
   <exec_depend>rospy</exec_depend>
   <exec_depend>actionlib_msgs</exec_depend>
   <exec_depend>message_runtime</exec_depend>
-  <!--Build Export Dependencies, pkgs needed to build libraries against this pkg, especially the catkin_package(DEPENDS)-->
+  <!--Build Export Dependencies, pkgs needed to build libraries against this pkg, especially the catkin_package(CATKIN_DEPENDS)-->
   <build_export_depend></build_export_depend>
   <!--If three of the previous dependencies are needed use this one-->
   <depend>roscpp</depend>
