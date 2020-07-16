@@ -140,6 +140,8 @@ git merge <branch>
 git rebase <branch>
 # Remove local branches not existing remotely
 git remote prune origin
+# Remove local branches not existing remotely in every fetch/pull
+git config --global fetch.prune true
 ```
 *`git checkout -b <branch>` is equivalent to `git branch <branch> && git checkout <branch>`.*
 
