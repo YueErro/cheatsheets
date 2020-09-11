@@ -11,6 +11,8 @@
 sudo apt-get update
 # not to upgrade especific pkg
 sudo apt-mark hold <pkg1> <pkg2>
+# get a list of holded pkgs
+sudo apt-mark showhold
 # to undo the previous command
 sudo apt-mark unhold <pkg1> <pkg2>
 # upgrade without asking comfirmation --> -y
