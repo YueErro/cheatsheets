@@ -33,3 +33,8 @@ EXPOSE <port>
 ```
 
 **It should specify at least one `CDM` or `ENTRYPOINT` command.**
+
+Build image from a Dockerfile
+```sh
+docker build -t <image> <path>
+```
