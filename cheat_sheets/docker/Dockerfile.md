@@ -1,6 +1,6 @@
 # Dockerfile cheat sheet
 ```sh
-mkdir ~/Dockerfile
+vi Dockerfile
 ```
 
 ```rb
