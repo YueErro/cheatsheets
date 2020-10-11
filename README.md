@@ -1,4 +1,4 @@
-## Cheat sheets
+# Cheat sheets
 This is a cheat sheet repository consisting of a set of notes used for quick reference in the following topics:
 
 - [apt](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/apt.md)
@@ -16,3 +16,16 @@ This is a cheat sheet repository consisting of a set of notes used for quick ref
 - [docker](https://github.com/YueErro/cheatsheets/tree/master/cheat_sheets/docker)
   - [docker](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/docker/docker.md)
   - [Dockerfile](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/docker/Dockerfile.md)
+
+## Contributing
+In general, I follow the "fork-and-pull" Git workflow:
+1. **Fork** the repository on GitHub
+2. **Clone** the project to your local machine
+3. **Commit** changes to your own branch
+4. **Push** your work back up to your fork
+5. Submit a **Pull request** so that I can review your changes
+
+_Make sure to merge the latest from "upstream" before making a PR!_
+
+## License
+By contributing, you agree that your contributions will be licensed under its MIT License.
