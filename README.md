@@ -1,4 +1,5 @@
 ## Cheat sheets
+This is a cheat sheet repository consisting of a set of notes used for quick reference in the following topics:
 
 - [apt](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/apt.md)
 - [Git](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/git.md)
