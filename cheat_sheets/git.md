@@ -261,13 +261,7 @@ git tag -a <version> -m '<message>'
 ```sh
 # Create a new one
 git submodule add -b <branch> <url>
-git submodule init
-# Create submodule
-git submodule add <url>
-git submodule init
-# Download an existing one
-git clone recursive <url>
-# If previously --recursive not used
+# Clone submodules after having cloned the repository containing them
 git submodule update --init --recursive
 ```
 #### Upload changes
