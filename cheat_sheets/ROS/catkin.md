@@ -73,6 +73,8 @@ catkin_generate_changelog
 catkin_prepare_release                # PATCH
 catkin_prepare_release --bump minor   # ABI
 catkin_prepare_release --bump major   # API
+# If there it's still 0 tags in the repositoy's website
+git push origin --tags
 # PR of the release
 bloom-release <repo> --rosdistro <distro>
 ```
