@@ -65,6 +65,8 @@ git pull
 ```
 *`git pull` is equivalent to `git fetch && git merge`.*
 
+*`git pull` over all subdirectories: `ls | xargs -I{} git -C {} pull`*
+
 ### Stage/Unstage
 ```sh
 # Discard all before staging
