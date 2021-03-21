@@ -58,6 +58,8 @@ docker rm -f <container>
 docker images
 # Remove image
 docker rmi -f <container>
+# Remove all untaged (<none>) images
+docker rmi $(docker images -a --filter "dangling=true" -q --no-trunc) -f
 ```
 
 ### Network
