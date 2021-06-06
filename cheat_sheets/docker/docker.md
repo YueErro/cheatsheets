@@ -48,6 +48,10 @@ docker ps
 docker exec <container> <command>
 # Start container
 docker start <container>
+# Attach a container
+docker attach <container>
+# Enter to an already running container
+docker exec -it <container>
 # Stop container through SIGTERM
 docker stop <container>
 # Stop container through SiGKILL
@@ -58,8 +62,16 @@ docker rm -f <container>
 docker images
 # Remove image
 docker rmi -f <container>
-# Remove all untaged (<none>) images
-docker rmi $(docker images -a --filter "dangling=true" -q --no-trunc) -f
+# Remove stopped containers, networks not used, dangling images and dangling build cache
+docker system prune
+# Remove dangling images
+docker image prune
+# Remove dangling containers
+docker container prune
+# Check memory consuption
+docker system df
+# Save container in a zip
+docker save <container> <ZIPname>.tar.gz
 ```
 
 ### Network
@@ -82,10 +94,10 @@ docker pull <user>/<image>:<tag>
 docker commit <container> <newimage>:<tag>
 # Copy files/folders between container and the local file system
 docker cp <localpath> <container>:<containerpath>
-# Upload the image
-docker push <user>/<image>:<tag>
 # Add tag to the image
 docker tag <user>/<image>:<tag> <user>/<image>:<newtag>
+# Upload the image
+docker push <user>/<image>:<tag>
 # List history of the image
 docker history <user>/<image>:<tag>
 # Display logs from the container
