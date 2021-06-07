@@ -16,6 +16,9 @@ This is a cheat sheet repository consisting of a set of notes used for quick ref
 - [docker](https://github.com/YueErro/cheatsheets/tree/master/cheat_sheets/docker)
   - [docker](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/docker/docker.md)
   - [Dockerfile](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/docker/Dockerfile.md)
+- [debugging](https://github.com/YueErro/cheatsheets/tree/master/cheat_sheets/debugging)
+  - [gdb](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/debugging/gdb.md)
+  - [valgrind](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/debugging/valgrind.md)
 
 ## Contributing
 In general, I follow the "fork-and-pull" Git workflow:
