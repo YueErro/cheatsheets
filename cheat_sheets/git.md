@@ -6,6 +6,10 @@ There is text-mode interface for Git called Tig which may be helpful:
 ```sh
 sudo apt install tig
 ```
+There is a graphical repository browser called Gitk which may be helpful as well:
+```sh
+sudo apt install gitk
+```
 
 ## Table of contents
 * [Setup](#Setup)
