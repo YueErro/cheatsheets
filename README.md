@@ -1,10 +1,15 @@
 # Cheat sheets
 This is a cheat sheet repository consisting of a set of notes used for quick reference in the following topics:
 
-- [apt](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/apt.md)
+- [APT](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/apt.md)
+- [Debugging](https://github.com/YueErro/cheatsheets/tree/master/cheat_sheets/debugging)
+  - [GDB](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/debugging/gdb.md)
+  - [Valgrind](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/debugging/valgrind.md)
+- [Docker](https://github.com/YueErro/cheatsheets/tree/master/cheat_sheets/docker)
+  - [docker](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/docker/docker.md)
+  - [Dockerfile](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/docker/Dockerfile.md)
 - [Git](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/git.md)
 - [Packages format](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/packages_format.md)
-- [SSH](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/ssh.md)
 - [ROS](https://github.com/YueErro/cheatsheets/tree/master/cheat_sheets/ROS)
   - [ROS](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/ROS/ROS.md)
   - [ROSpackage](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/ROS/ROSpackage.md)
@@ -13,12 +18,7 @@ This is a cheat sheet repository consisting of a set of notes used for quick ref
   - [ROS2](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/ROS2/ROS2.md)
   - [ROS2package](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/ROS2/ROS2package.md)
   - [colcon](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/ROS2/colcon.md)
-- [docker](https://github.com/YueErro/cheatsheets/tree/master/cheat_sheets/docker)
-  - [docker](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/docker/docker.md)
-  - [Dockerfile](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/docker/Dockerfile.md)
-- [debugging](https://github.com/YueErro/cheatsheets/tree/master/cheat_sheets/debugging)
-  - [gdb](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/debugging/gdb.md)
-  - [valgrind](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/debugging/valgrind.md)
+- [SSH](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/ssh.md)
 
 ## Contributing
 In general, I follow the "fork-and-pull" Git workflow:
