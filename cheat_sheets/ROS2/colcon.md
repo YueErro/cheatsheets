@@ -1,6 +1,6 @@
 # colcon cheat sheet
 ```sh
-sudo apt install python3-colcon-common-extensions
+sudo apt-get install python3-colcon-common-extensions
 ```
 
 Assuming the corresponding ROS 2 distribution is already sourced (. /opt/ros/<distro>/setup.bash).

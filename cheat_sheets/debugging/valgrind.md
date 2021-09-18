@@ -1,6 +1,6 @@
 # Valgrind cheat sheet
 ```sh
-sudo apt install valgrind
+sudo apt-get install valgrind
 ```
 
 ## Table of contents

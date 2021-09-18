@@ -1,6 +1,6 @@
 # GDB (GNU Project Debugger) cheat sheet
 ```sh
-sudo apt install gdb
+sudo apt-get install gdb
 ```
 
 ## Table of contents

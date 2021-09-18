@@ -1,7 +1,7 @@
 # ssh cheat sheet
 ```sh
-sudo apt install openssh-client
-sudo apt install openssh-server
+sudo apt-get install openssh-client
+sudo apt-get install openssh-server
 ```
 
 ## Table of contents

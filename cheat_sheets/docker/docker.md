@@ -1,6 +1,6 @@
 # docker cheat sheet
 ```sh
-sudo apt install docker docker.io
+sudo apt-get install docker docker.io
 ```
 
 ## Table of contents

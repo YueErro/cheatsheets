@@ -1,7 +1,7 @@
 # ROS package cheat sheet
 `catkin_lint` is a useful tool which detects possible problems between `package.xml` and `CMakeLists.txt`. Installation and usage:
 ```sh
-sudo apt install python-catkin-lint
+sudo apt-get install python-catkin-lint
 # Make sure the catking workspace is already sourced (. devel/setup.bash)
 catkin_lint --pkg <pkg>
 ```
