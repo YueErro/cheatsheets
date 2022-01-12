@@ -87,6 +87,7 @@ git add -p
 git reset @ .
 # Change author of the tag
 git checkout <tag>
+git tag -d <tag>
 git commit --amend --no-edit --allow-empty --author="<username> <<e-mail>>"
 export GIT_COMMITTER_DATE="$(git show --format=%aD | head -1)"; git tag <tag>
 git push origin :refs/tags/<tag>
