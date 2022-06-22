@@ -1,8 +1,10 @@
 # Cheat sheets
 This is a cheat sheet repository consisting of a set of notes used for quick reference in the following topics:
 
-- [APT](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/apt.md)
 - [Bash](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/bash.md)
+- [Debians](https://github.com/YueErro/cheatsheets/tree/master/cheat_sheets/debians)
+  - [APT](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/debians/apt.md)
+  - [DPKG](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/debians/dpkg.md)
 - [Debugging](https://github.com/YueErro/cheatsheets/tree/master/cheat_sheets/debugging)
   - [GDB](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/debugging/gdb.md)
   - [Valgrind](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/debugging/valgrind.md)
