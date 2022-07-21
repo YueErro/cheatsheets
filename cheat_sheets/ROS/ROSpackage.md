@@ -224,14 +224,15 @@ include_directories(
 add_library(myplugin SHARED
   src/myplugin.cpp
 )
-# usually one per main function
-add_executable(myfile src/myfile.cpp)
-# link the executable against the library, typically after an add_executable()
-target_link_libraries(myfile myplugin ${catkin_LIBRARIES})
 
 # ${${PROJECT_NAME}_EXPORTED_TARGETS} using MyMsg1 etc.
 # ${catkin_EXPORTED_TARGETS} using MyMsg1 etc from different pkg.
 add_dependencies(myfile ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+# usually one per main function
+add_executable(myfile src/myfile.cpp)
+# link the executable against the library, typically after an add_executable()
+target_link_libraries(myfile myplugin ${catkin_LIBRARIES})
 
 # installing target to the system instead of placing them into devel folder of the ws, it is also common to use ${CATKIN_GLOBAL_BIN_DESTINATION}, ${CATKIN_PACKAGE_PYTHON_DESTINATION}
 install(TARGETS ${PROJECT_NAME}
@@ -240,7 +241,7 @@ install(TARGETS ${PROJECT_NAME}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-# installing header files
+# installing header files (typically defining their interfaces)
 install(DIRECTORY include/
   DESTINATION ${CATKIN_GLOBAL_INCLUDE_DESTINATION}
   PATTERN ".svn" EXCLUDE
