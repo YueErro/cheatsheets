@@ -1,60 +1,81 @@
 # ssh cheat sheet
+
 ```sh
 sudo apt-get install openssh-client
 sudo apt-get install openssh-server
 ```
 
 ## Table of contents
-* [Connection](#Connection)
-* [Data transfer](#Data-transfer)
-* [Useful tips](#Useful-tips)
+
+* [Connection](#connection)
+* [Data transfer](#data-transfer)
+* [Useful tips](#useful-tips)
   * [ssh keys](#ssh-keys)
-  * [Simplify connection](#Simplify-connection)
+  * [Simplify connection](#simplify-connection)
 
 ### Connection
+
 ```sh
+# If there is no ping it won't connect
+ping <IP/hostname>
+# Stop ping
+ctrl + c
+# To ping just X times
+ping -c <5> <IP/hostname>
 # Connect
 ssh <username>@<IP>
+# If the dns is able to resolve
+ssh <username>@<hostname>
 # Disconnect
 exit
 # or
 ctrl + d
 ```
+
 ### Data transfer
+
 Common `scp` flags:
+
 * `-P`: Specifies the remote host ssh port
 * `-C`: Forces to compress the data sent to the destination machine
 * `-r`: Copies directories recursively
 
 ```sh
 # From local to remote
-scp <file> <username>@<IP>:<remotepath>
+scp <file> <username>@<IP/hostname>:<remote_path>
 # From remote to local
-scp <username>@<IP>:<remotepath> <localpaht>
+scp <username>@<IP/hostname>:<remote_path> <local_path>
 ```
 
 ### Useful tips
+
 #### ssh keys
+
 ```sh
 # Generate a new public/private rsa key pair
 ssh-keygen
 # Use public key to authenticate and do not ask again for the password
-ssh-copy-id -i $HOME/.ssh/id_rsa.pub <username>@<IP>
+ssh-copy-id -i $HOME/.ssh/id_rsa.pub <username>@<IP/hostname>
 # Connect as usual
-ssh <username>@<IP>
+ssh <username>@<IP/hostname>
 ```
 
 #### Simplify connection
+
 ```sh
 vi ~/.ssh/config
 ```
-```sh
+
+```vim
 Host <name>
-  Hostname <IP>
+  Hostname <IP/hostname>
   User <username>
-  IdentityFile <$HOME/.ssh/id_rsa>
+  IdentityFile <$HOME/.ssh/id_rsa.pub>
   Port <22>
+  RemoteCommand <command> && bash
+  RequestTTY yes
 ```
+
 ```sh
 ssh <name>
 ```

@@ -66,7 +66,7 @@ ip r help
 ip n
 ```
 
-For a more detailed information of the neighbor device objects `nmap` command can be used, see [nmap.md](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/network/nmap.md)
+For a more detailed information of the neighbor device objects `nmap` command can be used, see [nmap.md](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/network/nmap.md#ping-scanning)
 
 ### Additional useful commands
 
