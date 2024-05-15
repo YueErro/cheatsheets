@@ -3,10 +3,10 @@ This is a cheat sheet repository consisting of a set of notes used for quick ref
 
 - [Bash](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/bash.md)
 - [Debians](https://github.com/YueErro/cheatsheets/tree/master/cheat_sheets/debians)
-  - [APT](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/debians/apt.md)
-  - [DPKG](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/debians/dpkg.md)
+  - [apt](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/debians/apt.md)
+  - [dpkg](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/debians/dpkg.md)
 - [Debugging](https://github.com/YueErro/cheatsheets/tree/master/cheat_sheets/debugging)
-  - [GDB](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/debugging/gdb.md)
+  - [gdb](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/debugging/gdb.md)
   - [Valgrind](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/debugging/valgrind.md)
 - [Docker](https://github.com/YueErro/cheatsheets/tree/master/cheat_sheets/docker)
   - [docker](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/docker/docker.md)
@@ -14,7 +14,9 @@ This is a cheat sheet repository consisting of a set of notes used for quick ref
 - [Git](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/git.md)
 - [Network](https://github.com/YueErro/cheatsheets/tree/master/cheat_sheets/network)
   - [IP](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/network/ip.md)
-  - [NMAP](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/network/nmap.md)
+  - [nmap](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/network/nmap.md)
+  - [SSH](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/ssh.md)
+  - [tcpdump](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/network/tcpdump.md)
 - [Packages format](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/packages_format.md)
 - [ROS](https://github.com/YueErro/cheatsheets/tree/master/cheat_sheets/ROS)
   - [ROS](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/ROS/ROS.md)
@@ -24,7 +26,6 @@ This is a cheat sheet repository consisting of a set of notes used for quick ref
   - [ROS2](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/ROS2/ROS2.md)
   - [ROS2package](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/ROS2/ROS2package.md)
   - [colcon](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/ROS2/colcon.md)
-- [SSH](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/ssh.md)
 
 ## Contributing
 In general, I follow the "fork-and-pull" Git workflow:
