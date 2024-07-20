@@ -1,17 +1,30 @@
 # ssh cheat sheet
 
 ```sh
+# Bash
 sudo apt-get install openssh-client
 sudo apt-get install openssh-server
 ```
 
+```powershell
+# Powershell (admin)
+Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0
+Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
+# Start the sshd service manually
+Start-Service sshd
+# Start the sshd service automatically
+Set-Service -Name sshd -StartupType 'Automatic'
+```
+
 ## Table of contents
 
-* [Connection](#connection)
-* [Data transfer](#data-transfer)
-* [Useful tips](#useful-tips)
-  * [ssh keys](#ssh-keys)
-  * [Simplify connection](#simplify-connection)
+- [ssh cheat sheet](#ssh-cheat-sheet)
+  - [Table of contents](#table-of-contents)
+    - [Connection](#connection)
+    - [Data transfer](#data-transfer)
+    - [Useful tips](#useful-tips)
+      - [ssh keys](#ssh-keys)
+      - [Simplify connection](#simplify-connection)
 
 ### Connection
 
