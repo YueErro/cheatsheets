@@ -2,6 +2,7 @@
 This is a cheat sheet repository consisting of a set of notes used for quick reference in the following topics:
 
 - [Bash](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/bash.md)
+- [Command Line Interface (CLI)](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/cli.md)
 - [Debians](https://github.com/YueErro/cheatsheets/tree/master/cheat_sheets/debians)
   - [apt](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/debians/apt.md)
   - [dpkg](https://github.com/YueErro/cheatsheets/blob/master/cheat_sheets/debians/dpkg.md)
