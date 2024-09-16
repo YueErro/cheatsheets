@@ -18,28 +18,29 @@ sudo apt-get install gitk
 
 ## Table of contents
 
-* [Table of contents](#table-of-contents)
-  * [Setup](#setup)
-  * [Create repositories](#create-repositories)
-  * [Remote](#remote)
-  * [Basics](#basics)
-  * [Stage/Unstage](#stageunstage)
-  * [Commits](#commits)
-    * [Commit messages](#commit-messages)
-      * [Structure](#structure)
-      * [Type](#type)
-      * [Subject](#subject)
-      * [Body](#body)
-      * [Footer](#footer)
-      * [Example](#example)
-  * [Branches](#branches)
-  * [Stash](#stash)
-  * [`.gitignore`](#gitignore)
-  * [Releases](#releases)
-  * [Submodules](#submodules)
-    * [Create submodules](#create-submodules)
-    * [Upload changes](#upload-changes)
-    * [Download changes](#download-changes)
+- [git cheat sheet](#git-cheat-sheet)
+  - [Table of contents](#table-of-contents)
+    - [Setup](#setup)
+    - [Create repositories](#create-repositories)
+    - [Remote](#remote)
+    - [Basics](#basics)
+    - [Stage/Unstage](#stageunstage)
+    - [Commits](#commits)
+      - [Commit messages](#commit-messages)
+        - [Structure](#structure)
+        - [Type](#type)
+        - [Subject](#subject)
+        - [Body](#body)
+        - [Footer](#footer)
+        - [Example](#example)
+    - [Branches](#branches)
+    - [Stash](#stash)
+    - [`.gitignore`](#gitignore)
+    - [Tags](#tags)
+    - [Submodules](#submodules)
+      - [Create submodules](#create-submodules)
+      - [Upload changes](#upload-changes)
+      - [Download changes](#download-changes)
 
 ### Setup
 
@@ -126,12 +127,12 @@ git reset <commit>
 # Reset to remove the commit from everywhere
 git reset --hard <commit>
 # Or number of commits to remove
-git reset --hard HEAD~<numcommints>
+git reset --hard HEAD~<numcommits>
 # Force push
 git push origin HEAD --force
 # Cherry-pick a commit from somewhere else to current branch
 git cherry-pick <commit>
-# Cherry-pick before commiting in order to insepct and modify, the commit message will have been stored
+# Cherry-pick before committing in order to inspect and modify, the commit message will have been stored
 git cherry-pick -n <commit>
 # Ignore already committed file, then add it to .gitignore
 git rm --cached <file>
@@ -162,19 +163,18 @@ body
 footer
 ```
 
-
 ##### Type
 
 The type is contained within the title and can be one of these types:
 
-* **feat**: a new feature
-* **fix**: a bug fix
-* **perf**: improve code performance
-* **docs**: changes to documentation
-* **style**: formatting, missing semi colons, etc; no code change
-* **refactor**: refactoring production code
-* **test**: adding tests, refactoring test; no production code change
-* **chore**: updating build tasks, package manager configs, etc; no production code change
+- **feat**: a new feature
+- **fix**: a bug fix
+- **perf**: improve code performance
+- **docs**: changes to documentation
+- **style**: formatting, missing semi colons, etc; no code change
+- **refactor**: refactoring production code
+- **test**: adding tests, refactoring test; no production code change
+- **chore**: updating build tasks, package manager configs, etc; no production code change
 
 ##### Subject
 
@@ -206,7 +206,7 @@ and `rebase` can get confused if you run the two together.
 
 Explain the problem that this commit is solving. Focus on why you
 are making this change as opposed to how (the code explains that).
-Are there side effects or other unintuitive consequenses of this
+Are there side effects or other unintuitive consequences of this
 change? Here's the place to explain them.
 
 Further paragraphs come after blank lines.
@@ -225,6 +225,7 @@ See also: #456, #789
 ```
 
 ### Branches
+
 ```sh
 # List branches
 git branch -a
@@ -255,12 +256,13 @@ git remote prune origin
 # Remove local branches not existing remotely in every fetch/pull
 git config --global fetch.prune true
 ```
+
 *`git checkout -b <branch>` is equivalent to `git branch <branch> && git checkout <branch>`.*
 
 *`git pull --rebase` is equivalent to `git fetch && git rebase`*
 
-
 ### Stash
+
 ```sh
 # Save
 git stash
@@ -275,33 +277,42 @@ git stash clear
 ```
 
 ### `.gitignore`
+
 It is a text file that tells Git which files or folders has to be ignored in a project. [Git ignore patterns](https://www.atlassian.com/git/tutorials/saving-changes/gitignore#git-ignore-patterns) may be helpful for writing your own `.gitignore` file.
 
 The **local** `.gitignore` file is usually placed in the root directory of the project and the **global** one can be created as follow:
+
 ```sh
 touch ~/.gitignore_global
 git config --global core.excludesfile ~/.gitignore_global
 ```
 
-### Releases
+### Tags
+
 ```sh
-git tag
-# Show releases with comments
+# Show tags with comments
 git tag -l -n1
+# Create local tag
 git tag <version>
-# Release version with comment
+# Create tag with comment
 git tag -a <version> -m '<message>'
+# Push the tag remotely
+git push origin tag <version>
 ```
 
 ### Submodules
+
 #### Create submodules
+
 ```sh
 # Create a new one
 git submodule add -b <branch> <url>
 # Clone submodules after having cloned the repository containing them
 git submodule update --init --recursive
 ```
+
 #### Upload changes
+
 ```sh
 # Push to the submodule
 git add <submodule>/<file>
@@ -312,7 +323,9 @@ git add <submodule>
 git commit
 git push
 ```
+
 #### Download changes
+
 ```sh
 # Pull from the repository
 git pull --recurse-submodules
