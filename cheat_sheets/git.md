@@ -41,6 +41,7 @@ sudo apt-get install gitk
       - [Create submodules](#create-submodules)
       - [Upload changes](#upload-changes)
       - [Download changes](#download-changes)
+    - [Create local repository](#create-local-repository)
 
 ### Setup
 
@@ -331,4 +332,20 @@ git push
 git pull --recurse-submodules
 # Pull from each submodule
 git submodule update --recursive --remote
+```
+
+### Create local repository
+
+```sh
+git init --bare <project>.git
+cd <project>.git
+git remote add <name> <path2project.git>
+# Allow pushes
+git config receive.denyCurrentBranch ignore
+# Clone it wherever you want and the times you want in different directories
+git clone <path2project.git>
+# Work as usual
+git add <files>
+git commit -m "<message>"
+git push
 ```
