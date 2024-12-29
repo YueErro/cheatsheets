@@ -5,11 +5,97 @@ winget install Kitware.CMake
 ```
 
 - [cmake cheat sheet](#cmake-cheat-sheet)
-  - [Building](#building)
-  - [Installing](#installing)
-  - [Running](#running)
-    - [App](#app)
-    - [Tests](#tests)
+    - [CMakeLists.txt](#cmakeliststxt)
+      - [Global setup](#global-setup)
+      - [Declare module](#declare-module)
+      - [Declare flags](#declare-flags)
+      - [Declare dependencies](#declare-dependencies)
+      - [Header-only libraries](#header-only-libraries)
+      - [Anti patterns](#anti-patterns)
+    - [Building](#building)
+    - [Installing](#installing)
+    - [Running](#running)
+      - [App](#app)
+      - [Tests](#tests)
+
+### CMakeLists.txt
+
+#### Global setup
+
+```cmake
+# If you cannot have the required minimum features because you have a more recent CMake version, CMake may disable them because he wants to be compatible
+cmake_minimum_required(VERSION <x.y.z>)
+# Use some flags, specially Werror and W something, if you use a dependency more restrictive than you that causes having a break
+if(MSVC)
+  # W3: Warning level to 3(production quality)
+  # WX: Treats all warnings as errors
+  add_compile_options(/W3 /WX)
+else()
+  # W: Warning about constructions
+  # Wall: Enables most warning messages
+  # Werror: Treats all warnings as errors
+  add_compile_options(-W -Wall -Werror)
+  endif()
+```
+
+#### Declare module
+
+```cmake
+add_library(<LIB_NAME>
+  src/<file1>.cpp
+  src/<file2>.cpp
+  # ...
+)
+```
+
+#### Declare flags
+
+```cmake
+# Public headers
+target_include_directories(<LIB_NAME> PUBLIC include)
+# Private headers
+target_include_directories(<LIB_NAME> PRIVATE src)
+# Something that depends on the config of CMake
+if(<SOME_SETTINGS>)
+  target_compile_definitions(<LIB_NAME> PUBLIC <WITH_SOME_SETTINGS>)
+  # If the setting only affects implementation
+  target_compile_definitions(<LIB_NAME> PRIVATE <WITH_SOME_SETTINGS>)
+endif()
+```
+
+#### Declare dependencies
+
+```cmake
+# Public (interface) dependencies
+target_link_libraries(<LIB_NAME> PUBLIC <DEPS>)
+# Private (implementation) dependencies
+target_link_libraries(<LIB_NAME> PRIVATE <DEPS>)
+```
+
+#### Header-only libraries
+
+Something that belongs to your public interface (you want your clients to see it), but should not be used to build your library.
+
+```cmake
+add_library(<LIB_NAME> INTERFACE)
+target_include_directories(<LIB_NAME> INTERFACE include)
+target_link_libraries(<LIB_NAME> INTERFACE <DEPS>)
+```
+
+#### Anti patterns
+
+```cmake
+# Don't use macros that affect all targets
+INCLUDE_DIRECTORIES()
+ADD_DEFINITIONS()
+LINK_LIBRARIES()
+# Don't use it with a path outside your module
+TARGET_INCLUDE_DIRECTORIES()
+# Don't use it without specifying PUBLIC, PRIVATE or INTERFACE
+TARGET_LINK_LIBRARIES()
+# Don't use it to set flags that affect the ABI
+TARGET_COMPILE_OPTIONS()
+```
 
 ### Building
 
