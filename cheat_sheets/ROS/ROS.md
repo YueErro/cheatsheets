@@ -1,18 +1,20 @@
 # ROS cheat sheet
-Assuming the corresponding ROS environment is already sourced (. devel/setup.bash).
+Assuming the corresponding ROS environment is already sourced (`. devel/setup.bash`).
 
 ## Table of contents
-* [Filesystem management](#Filesystem-management)
-* [Start-up and process launch](#start-up-and-process-launch)
-* [Running system](#Running-system)
-  * [rosnode](#rosnode)
-  * [rostopic](#rostopic)
-  * [rosservice](#rosservice)
-  * [rosparam](#rosparam)
-  * [rosmsg and rossrv](#rosmsg-and-rossrv)
-  * [rosbag](#rosbag)
-  * [rqt](#rqt)
-* [URDF and xacro](#URDF-and-xacro)
+- [ROS cheat sheet](#ros-cheat-sheet)
+  - [Table of contents](#table-of-contents)
+    - [Filesystem management](#filesystem-management)
+    - [Start-up and process launch](#start-up-and-process-launch)
+    - [Running system](#running-system)
+      - [rosnode](#rosnode)
+      - [rostopic](#rostopic)
+      - [rosservice](#rosservice)
+      - [rosparam](#rosparam)
+      - [rosmsg and rossrv](#rosmsg-and-rossrv)
+      - [rosbag](#rosbag)
+      - [rqt](#rqt)
+    - [URDF and xacro](#urdf-and-xacro)
 
 ### Filesystem management
 ```sh

@@ -3,11 +3,13 @@
 sudo apt-get install python3-colcon-common-extensions
 ```
 
-Assuming the corresponding ROS 2 distribution is already sourced (. /opt/ros/<distro>/setup.bash).
+Assuming the corresponding ROS 2 distribution is already sourced (`. /opt/ros/<distro>/setup.bash`).
 
 ## Table of contents
-* [Create a workspace for colcon](#Create-a-workspace-for-colcon)
-  * [colcon build](#colcon-build)
+- [colcon cheat sheet](#colcon-cheat-sheet)
+  - [Table of contents](#table-of-contents)
+    - [Create a workspace for colcon](#create-a-workspace-for-colcon)
+      - [colcon build](#colcon-build)
 
 ### Create a workspace for colcon
 ```sh

@@ -7,20 +7,22 @@ catkin_lint --pkg <pkg>
 ```
 
 ## Table of contents
-* [actionlib](#actionlib)
-* [config files](#config-files)
-* [include directory](#include-directory)
-* [roslaunch XML](#roslaunch-XML)
-* [rosmsg](#rosmsg)
-* [python scripts](#python-scripts)
-* [src](#src)
-* [rossrv](#rossrv)
-* [tests](#tests)
-  * [gtest](#gtest)
-  * [unittest](#unittest)
-* [CMakeLists.txt](#cmakeliststxt)
-* [package.xml](#packagexml)
-* [Summary structure](#Summary-structure)
+- [ROS package cheat sheet](#ros-package-cheat-sheet)
+  - [Table of contents](#table-of-contents)
+    - [actionlib](#actionlib)
+    - [config files](#config-files)
+    - [include directory](#include-directory)
+    - [roslaunch XML](#roslaunch-xml)
+    - [rosmsg](#rosmsg)
+    - [Python scripts](#python-scripts)
+    - [src](#src)
+    - [rossrv](#rossrv)
+    - [tests](#tests)
+      - [gtest](#gtest)
+      - [unittest](#unittest)
+    - [CMakeLists.txt](#cmakeliststxt)
+    - [package.xml](#packagexml)
+    - [Summary structure](#summary-structure)
 
 ### actionlib
 For generating a new ROS action (action definition), create a new `action/` directory and place there the actions, `<my_action>.action`:

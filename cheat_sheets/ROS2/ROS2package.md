@@ -1,9 +1,11 @@
 # ROS 2 package cheat sheet
 
 ## Table of contents
-* [package.xml](#packagexml)
-* [CMakeLists.txt](#cmakeliststxt)
-* [ros2 launch Python3](#ros2-launch-Python3)
+- [ROS 2 package cheat sheet](#ros-2-package-cheat-sheet)
+  - [Table of contents](#table-of-contents)
+    - [package.xml](#packagexml)
+    - [CMakeLists.txt](#cmakeliststxt)
+    - [ros2 launch Python3](#ros2-launch-python3)
 
 ### package.xml
 ```xml
@@ -70,7 +72,7 @@ find_package(urdf REQUIRED)
 include_directories(include
   ${gazebo_dev_INCLUDE_DIRS}
   ${gazebo_ros_INCLUDE_DIRS}
-  ${geometry_msgs_INCLUDE_DIRS} )
+  ${geometry_msgs_INCLUDE_DIRS})
 
 link_directories(${gazebo_dev_LIBRARY_DIRS})
 
@@ -79,28 +81,28 @@ add_executable(myfile src/myfile.cpp)
 add_library(myplugin SHARED
   src/myplugin.cpp)
 
-ament_target_dependencies( ${PROJECT_NAME}
+ament_target_dependencies(${PROJECT_NAME}
   "rclcpp"
   "gazebo_dev"
   "gazebo_ros"
-  "geometry_msgs" )
+  "geometry_msgs")
 
-install( PROGRAMS scripts/mypyfile1.py scripts/mypyfile2.py
+install(PROGRAMS scripts/mypyfile1.py scripts/mypyfile2.py
   DESTINATION lib/$(PROJECT_NAME) )
 
-install( DIRECTORY meshes urdf material rviz launch
-  DESTINATION share/${PROJECT_NAME} )
+install(DIRECTORY meshes urdf material rviz launch
+  DESTINATION share/${PROJECT_NAME})
 
-install( TARGETS mynode
-  DESTINATION lib/${PROJECT_NAME} )
+install(TARGETS mynode
+  DESTINATION lib/${PROJECT_NAME})
 
-install( TARGETS myplugin1 myplugin2
+install(TARGETS myplugin1 myplugin2
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin)
 
-install( PROGRAMS config/cfg1.yaml config/cfg2.yaml
-  DESTINATION share/${PROJECT_NAME} )
+install(PROGRAMS config/cfg1.yaml config/cfg2.yaml
+  DESTINATION share/${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_gtest)

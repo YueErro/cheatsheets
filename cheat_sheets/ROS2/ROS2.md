@@ -1,19 +1,21 @@
 # ROS 2 cheat sheet
-Assuming the corresponding ROS 2 environment is already sourced (. install/setup.bash).
+Assuming the corresponding ROS 2 environment is already sourced (`. install/setup.bash`).
 
 ## Table of contents
-* [Filesystem management](#Filesystem-management)
-  * [ros2 pkg](#ros2-pkg)
-* [Process launch](#process-launch)
-* [Running system](#Running-system)
-  * [ros2 node](#ros2-node)
-  * [ros2 topic](#ros2-topic)
-  * [ros2 service](#ros2-service)
-  * [ros2 action](#ros2-action)
-  * [ros2 param](#ros2-param)
-  * [ros2 msg and ros2 srv](#ros2-msg-and-ros2-srv)
-  * [ros2 bag](#ros2-bag)
-* [URDF and xacro](#URDF-and-xacro)
+- [ROS 2 cheat sheet](#ros-2-cheat-sheet)
+  - [Table of contents](#table-of-contents)
+    - [Filesystem management](#filesystem-management)
+      - [ros2 pkg](#ros2-pkg)
+    - [Process-launch](#process-launch)
+    - [Running system](#running-system)
+      - [ros2 node](#ros2-node)
+      - [ros2 topic](#ros2-topic)
+      - [ros2 service](#ros2-service)
+      - [ros2 action](#ros2-action)
+      - [ros2 param](#ros2-param)
+      - [ros2 msg and ros2 srv](#ros2-msg-and-ros2-srv)
+      - [ros2 bag](#ros2-bag)
+    - [URDF and xacro](#urdf-and-xacro)
 
 ### Filesystem management
 #### ros2 pkg
