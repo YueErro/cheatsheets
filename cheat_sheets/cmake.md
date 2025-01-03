@@ -12,6 +12,7 @@ winget install Kitware.CMake
       - [Declare dependencies](#declare-dependencies)
       - [Header-only libraries](#header-only-libraries)
       - [Anti patterns](#anti-patterns)
+      - [Cross platform pitfalls](#cross-platform-pitfalls)
     - [Building](#building)
     - [Installing](#installing)
     - [Running](#running)
@@ -95,6 +96,25 @@ TARGET_INCLUDE_DIRECTORIES()
 TARGET_LINK_LIBRARIES()
 # Don't use it to set flags that affect the ABI
 TARGET_COMPILE_OPTIONS()
+```
+
+#### Cross platform pitfalls
+
+```cmake
+# Command line tools
+execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${filepath} ${sympath})
+# Instead of
+execute_process(COMMAND mklink ${filepath} ${sympath}) # windows
+execute_process(COMMAND ln -s ${filepath} ${sympath}) # unix
+
+# Independent paths
+target_include_directories(<LIB_NAME>
+  PUBLIC
+    $<INSTALL_INTERFACE:include/<LIB_PATH>>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/<LIB_PATH>>
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
 ```
 
 ### Building
