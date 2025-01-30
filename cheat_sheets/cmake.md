@@ -1,101 +1,74 @@
 # cmake cheat sheet
 
 ```cmd
+sudo apt install cmake
 winget install Kitware.CMake
 ```
 
 - [cmake cheat sheet](#cmake-cheat-sheet)
-    - [CMakeLists.txt](#cmakeliststxt)
-      - [Global setup](#global-setup)
-      - [Declare module](#declare-module)
-      - [Declare flags](#declare-flags)
-      - [Declare dependencies](#declare-dependencies)
-      - [Header-only libraries](#header-only-libraries)
-      - [Anti patterns](#anti-patterns)
-      - [Cross platform pitfalls](#cross-platform-pitfalls)
     - [Building](#building)
     - [Installing](#installing)
     - [Running](#running)
       - [App](#app)
       - [Tests](#tests)
+    - [CMakeLists.txt](#cmakeliststxt)
+      - [Anti patterns](#anti-patterns)
+      - [Cross platform pitfalls](#cross-platform-pitfalls)
+      - [Example](#example)
 
-### CMakeLists.txt
+### Building
 
-#### Global setup
-
-```cmake
-# If you cannot have the required minimum features because you have a more recent CMake version, CMake may disable them because he wants to be compatible
-cmake_minimum_required(VERSION <x.y.z>)
-# Use some flags, specially Werror and W something, if you use a dependency more restrictive than you that causes having a break
-if(MSVC)
-  # W3: Warning level to 3(production quality)
-  # WX: Treats all warnings as errors
-  add_compile_options(/W3 /WX)
-else()
-  # W: Warning about constructions
-  # Wall: Enables most warning messages
-  # Werror: Treats all warnings as errors
-  add_compile_options(-W -Wall -Werror)
-  endif()
+```bash
+# Clone or download the repository/project
+# cd to the repository/project where the CMakeLists.txt is
+mkdir build && cd build
+cmake -G <GENERATOR> -T <BUILD_TOOLS> -A <x64/Win32> -DBUILD_TESTING=<ON/OFF> ..
+# Debug: With no optimizations and full debug information
+# Release: With full optimization and no debug information
+# RelWithDebInfo: Compromise of the previous two
+# MinRizeRel: Optimized for size rather than speed and no debug information is created, used for embedded devices
+cmake --build . --config <Release/Debug/MinSizeRel/RelWithDebInfo>
+# If you want to build it again after making changes in the `CMakeLists.txt`, you can clean the target
+cmake --build . --target clean
 ```
 
-#### Declare module
+### Installing
 
-```cmake
-add_library(<LIB_NAME>
-  src/<file1>.cpp
-  src/<file2>.cpp
-  # ...
-)
+```bash
+cmake --install . --config <Release/Debug/MinSizeRel/RelWithDebInfo>
 ```
 
-#### Declare flags
+### Running
 
-```cmake
-# Public headers
-target_include_directories(<LIB_NAME> PUBLIC include)
-# Private headers
-target_include_directories(<LIB_NAME> PRIVATE src)
-# Something that depends on the config of CMake
-if(<SOME_SETTINGS>)
-  target_compile_definitions(<LIB_NAME> PUBLIC <WITH_SOME_SETTINGS>)
-  # If the setting only affects implementation
-  target_compile_definitions(<LIB_NAME> PRIVATE <WITH_SOME_SETTINGS>)
-endif()
+#### App
+
+```bash
+.\<Debug/Release/MinSizeRel/RelWithDebInfo>/<EXECUTABLE>.exe
 ```
 
-#### Declare dependencies
+#### Tests
 
-```cmake
-# Public (interface) dependencies
-target_link_libraries(<LIB_NAME> PUBLIC <DEPS>)
-# Private (implementation) dependencies
-target_link_libraries(<LIB_NAME> PRIVATE <DEPS>)
+```bash
+ctest
+# Or directly specify the test executable
+.\<Debug/Release/MinSizeRel/RelWithDebInfo>/<TEST_EXECUTABLE>.exe
 ```
 
-#### Header-only libraries
-
-Something that belongs to your public interface (you want your clients to see it), but should not be used to build your library.
-
-```cmake
-add_library(<LIB_NAME> INTERFACE)
-target_include_directories(<LIB_NAME> INTERFACE include)
-target_link_libraries(<LIB_NAME> INTERFACE <DEPS>)
-```
+### CMakeLists.txt 
 
 #### Anti patterns
 
 ```cmake
 # Don't use macros that affect all targets
-INCLUDE_DIRECTORIES()
-ADD_DEFINITIONS()
-LINK_LIBRARIES()
+include_directories()
+add_definitions()
+link_libraries()
 # Don't use it with a path outside your module
-TARGET_INCLUDE_DIRECTORIES()
+target_include_directories()
 # Don't use it without specifying PUBLIC, PRIVATE or INTERFACE
-TARGET_LINK_LIBRARIES()
+target_link_libraries()
 # Don't use it to set flags that affect the ABI
-TARGET_COMPILE_OPTIONS()
+target_compile_options()
 ```
 
 #### Cross platform pitfalls
@@ -117,36 +90,103 @@ target_include_directories(<LIB_NAME>
 )
 ```
 
-### Building
+#### Example
 
-```cmd
-REM clone or download the repository/project
-REM cd to the repository/project where the CMakeLists.txt is
-mkdir build && cd build
-cmake -G <GENERATOR> -T <BUILD_TOOLS> -A <x64/Win32> -DBUILD_TESTING=<ON/OFF> ..
-cmake --build . --config <Release/Debug/MinSizeRel/RelWithDebInfo>
-REM if you want to build it again after making changes in the `CMakeLists.txt`, you can clean the target
-cmake --build . --target clean
-```
+```cmake
+cmake_minimum_required(VERSION 3.22)
 
-### Installing
+project(proj_name VERSION 1.0.0 LANGUAGES CXX)
 
-```cmd
-cmake --install . --config <Release/Debug/MinSizeRel/RelWithDebInfo>
-```
+find_package(yaml-cpp CONFIG REQUIRED)
+find_package(eigen3 CONFIG REQUIRED)
+find_package(fmt CONFIG REQUIRED)
 
-### Running
+# STATUS: Incidental information, preceded by two hyphens
+# WARNING: Highlighted in red, processing will continue
+# AUTHOR-WARNING: Like WARNING, but only enable if with -Wdev flag
+# SEND_ERROR: Error message highlighted in red, processing will continue until the configure
+#             stage completes, but generation will not be performed
+# FATAL_ERROR: Hard error, processing will stop immediately
+# DEPRECATION: Used to log deprecation message, if neither CMAKE_ERROR_DEPRECATED nor
+#              CMAKE_WARN_DEPRECATED are set to true, the message won't be shown
+message(STATUS "The Project name is: ${PROJECT_NAME}")
+# Alternatively
+set(print_var "print")
+include(CMakePrintHelpers)
+cmake_print_variables(print_var CMAKE_VERSION) # print_var="print" ; CMAKE_VERSION="3.22"
+set(watchdog_var "It logs all accesses to it")
+variable_watch(watchdog_var)
 
-#### App
+# Compiler such as Microsoft Visual C++
+# Use some flags, specially Werror and W something, if you use a dependency more restrictive than you that causes having a break
+if(MSVC)
+  # W3: Warning level to 3(production quality)
+  # WX: Treats all warnings as errors
+  add_compile_options(/W3 /WX)
+else()
+  # W: Warning about constructions
+  # Wall: Enables most warning messages
+  # Werror: Treats all warnings as errors
+  add_compile_options(-W -Wall -Werror)
+  endif()
+# Filesystem
+#   if(EXISTS pathToFileOrDir)
+#   if(IS_DIRECTORY pathToDir)
+#   if(IS_SYMLINK filename)
+#   if(IS_ABSOLUTE path)
+#   if(file1 IS_NEWER_THAN file2)
+# Existence
+#   if(DEFINED name)
+#   if(COMMAND name)
+#   if(POLICY name)
+#   if(TARGET name)
+#   if(TEST name)
+#   if(value IN_LIST listVar)
+if($watchdog_var)
+# Numeric operators: LESS, GREATER, EQUAL, LESS_EQUAL, GREATER_EQUAL
+elseif(${PROJECT_NAME})
+# String: STRLESS, STRGREATER, STREQUAL, STRLESS_EQUAL, STRGREATER_EQUAL
+# Any variable can be converted to lower or upper case as follows:
+# $<LOWER_CASE:${watchdog_var}> STREQUAL $<UPPER_CASE:${watchdog_var}> --> False
+else()
+# Version numbers: VERSION_LESS, VERSION_GREATER, VERSION_EQUAL, VERSION_LESS_EQUAL, VERSION_GREATER_EQUAL
+endif()
 
-```cmd
-.\<Debug/Release/MinSizeRel/RelWithDebInfo>\<EXECUTABLE>.exe
-```
+add_library(${PROJECT_NAME}_private
+  src/private.cpp
+)
+# PRIVATE: Uses it internally in private implementation
+target_link_libraries(${PROJECT_NAME}_private PRIVATE yaml-cpp)
 
-#### Tests
+add_library(${PROJECT_NAME}_public
+  src/public.cpp
+)
+# PUBLIC: Uses it internally in private implementation, but also in public headers
+target_link_libraries(${PROJECT_NAME}_public PUBLIC Eigen3::Eigen)
 
-```cmd
-ctest
-REM or directly specify the test executable
-.\<Debug/Release/MinSizeRel/RelWithDebInfo>\<TEST_EXECUTABLE>.exe
+add_library(${PROJECT_NAME}_interface
+  src/interface.cpp
+)
+# INTERFACE: Uses it in public headers, i.e. header-only library
+target_link_libraries(${PROJECT_NAME}_interface INTERFACE ${PROJECT_NAME}_interface fmt::fmt-header-only)
+
+set(${PROJECT_NAME}_LIBRARIES ${PROJECT_NAME}_private ${PROJECT_NAME}_public ${PROJECT_NAME}_interface)
+foreach(projLib IN LISTS ${PROJECT_NAME}_LIBRARIES)
+# projLib is proj_name_private, then proj_name_public and then proj_name_interface
+endforeach()
+foreach(dir config data)
+# dir value is config, then data, then ...
+endforeach()
+foreach(var IN LISTS ${PROJECT_NAME}_LIBRARIES ITEMS config data)
+# var is a union of the two previous cases
+endforeach()
+
+# WIN32 (Windows platform): builds it as Windows GUI with WinMain() instead of main() and with the /SUBSYSTEM:WINDOWS
+# MACOSX_BUNDLE (Apple platform): builds an app bundle
+add_executable(${PROJECT_NAME}_exec WIN32 MACOSX_BUNDLE
+  src/main.cpp
+)
+
+# TODO
+
 ```
