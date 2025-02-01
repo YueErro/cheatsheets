@@ -1,5 +1,7 @@
 # cmake cheat sheet
 
+Mainly based on [Professional CMake A Practical Guide (Craig Scott)](https://github.com/YueErro/programming_books/blob/main/books/Professional%20CMake%20A%20Practical%20Guide%20(Craig%20Scott)%20(z-lib.org).pdf) book.
+
 ```cmd
 sudo apt install cmake
 winget install Kitware.CMake
@@ -14,6 +16,7 @@ winget install Kitware.CMake
     - [CMakeLists.txt](#cmakeliststxt)
       - [Anti patterns](#anti-patterns)
       - [Cross platform pitfalls](#cross-platform-pitfalls)
+      - [Language requirements](#language-requirements)
       - [Example](#example)
 
 ### Building
@@ -54,13 +57,13 @@ ctest
 .\<Debug/Release/MinSizeRel/RelWithDebInfo>/<TEST_EXECUTABLE>.exe
 ```
 
-### CMakeLists.txt 
+### CMakeLists.txt
 
 #### Anti patterns
 
 ```cmake
-# Don't use macros that affect all targets
-include_directories()
+# Don't use macros that affect all targets, prefer to use the target_...() instead
+include_directories() # list of directories to be used as header search paths [AFTER|BEFORE] [SYSTEM]
 add_definitions()
 link_libraries()
 # Don't use it with a path outside your module
@@ -68,7 +71,7 @@ target_include_directories()
 # Don't use it without specifying PUBLIC, PRIVATE or INTERFACE
 target_link_libraries()
 # Don't use it to set flags that affect the ABI
-target_compile_options()
+target_compile_options() # BEFORE and PRIVATE|PUBLIC|INTERFACE options
 ```
 
 #### Cross platform pitfalls
@@ -81,14 +84,30 @@ execute_process(COMMAND mklink ${filepath} ${sympath}) # windows
 execute_process(COMMAND ln -s ${filepath} ${sympath}) # unix
 
 # Independent paths
-target_include_directories(<LIB_NAME>
+target_include_directories(<LIB_NAME> # BEFORE | SYSTEM: to prepend to existing ones or treat as system include paths
+  # Adds header search paths to INCLUDE_DIRECTORIES and INTERFACE_INCLUDE_DIRECTORIES
   PUBLIC
     $<INSTALL_INTERFACE:include/<LIB_PATH>>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/<LIB_PATH>>
+  # Adds only to INCLUDE_DIRECTORIES
   PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
+  # INTERFACE adds only to INTERFACE_INCLUDE_DIRECTORIES
 )
 ```
+
+#### Language requirements
+
+`<LANG>_STANDARD`:
+
+- `C_STANDARD`: 90, 99 or 11
+- `CXX_STANDARD`: 98, 11 or 14
+- `CXX_STANDARD` (CMake 3.8): 98, 11, 14 or 17
+- `CXX_STANDARD` (CMake 3.12): 98, 11, 14, 17 or 20
+- `CUDA_STANDARD` (CMAKE 3.8): 98, 11
+
+For a minimum required language use `<LANG>_STANDARD_REQUIRED`.
+Many compilers support their own extensions to the language standard and `<LANG>_EXTENSIONS` controls whether those extensions are enabled or not. If extensions are enabled `<LANG>_STANDARD` must be set, otherwise the extensions will be ignored.
 
 #### Example
 
@@ -100,6 +119,17 @@ project(proj_name VERSION 1.0.0 LANGUAGES CXX)
 find_package(yaml-cpp CONFIG REQUIRED)
 find_package(eigen3 CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF) # This is the default value
+
+# For a particular target use:
+# set_target_properties(target_name PROPERTIES
+#   CXX_STANDARD          20
+#   CXX_STANDARD_REQUIRED ON
+#   CXX_EXTENSIONS        OFF
+# )
 
 # STATUS: Incidental information, preceded by two hyphens
 # WARNING: Highlighted in red, processing will continue
@@ -114,6 +144,7 @@ message(STATUS "The Project name is: ${PROJECT_NAME}")
 set(print_var "print")
 include(CMakePrintHelpers)
 cmake_print_variables(print_var CMAKE_VERSION) # print_var="print" ; CMAKE_VERSION="3.22"
+# Note: Always use double quotes to append new values to existing flags
 set(watchdog_var "It logs all accesses to it")
 variable_watch(watchdog_var)
 
@@ -128,7 +159,11 @@ else()
   # Wall: Enables most warning messages
   # Werror: Treats all warnings as errors
   add_compile_options(-W -Wall -Werror)
-  endif()
+  # For a general case, not recommended, to preserve exiting cache variable
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
+endif()
+
+
 # Filesystem
 #   if(EXISTS pathToFileOrDir)
 #   if(IS_DIRECTORY pathToDir)
@@ -152,18 +187,25 @@ else()
 # Version numbers: VERSION_LESS, VERSION_GREATER, VERSION_EQUAL, VERSION_LESS_EQUAL, VERSION_GREATER_EQUAL
 endif()
 
-add_library(${PROJECT_NAME}_private
+# STATIC: Static library, on Windows .lib and on Unix .a
+add_library(${PROJECT_NAME}_private STATIC
   src/private.cpp
+)
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+    PROJECT_DIR="${PROJECT_SOURCE_DIR}"
 )
 # PRIVATE: Uses it internally in private implementation
 target_link_libraries(${PROJECT_NAME}_private PRIVATE yaml-cpp)
 
-add_library(${PROJECT_NAME}_public
+# SHARED: Dynamic linked library, on Windows .dll and on Unix .so
+add_library(${PROJECT_NAME}_public SHARED
   src/public.cpp
 )
 # PUBLIC: Uses it internally in private implementation, but also in public headers
 target_link_libraries(${PROJECT_NAME}_public PUBLIC Eigen3::Eigen)
 
+# MODULE: Like shared but intended tob e loaded dynamically at run-time
+#         Typically plugins or optional components the user may choose to be loaded or not
 add_library(${PROJECT_NAME}_interface
   src/interface.cpp
 )
@@ -183,7 +225,7 @@ endforeach()
 
 # WIN32 (Windows platform): builds it as Windows GUI with WinMain() instead of main() and with the /SUBSYSTEM:WINDOWS
 # MACOSX_BUNDLE (Apple platform): builds an app bundle
-add_executable(${PROJECT_NAME}_exec WIN32 MACOSX_BUNDLE
+add_executable(${PROJECT_NAME}_exec # WIN32|MACOSX_BUNDLE
   src/main.cpp
 )
 
