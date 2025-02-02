@@ -78,10 +78,37 @@ target_compile_options() # BEFORE and PRIVATE|PUBLIC|INTERFACE options
 
 ```cmake
 # Command line tools
-execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${filepath} ${sympath})
+execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${filepath} ${sympath}
+  RESULT_VARIABLE symlink_result
+)
+if(NOT symlink_result EQUAL 0)
+  message(FATAL_ERROR "Couldn't create symlink: ${filepath} -> ${sympath}")
+  return(FATAL_ERROR)
+endif()
 # Instead of
 execute_process(COMMAND mklink ${filepath} ${sympath}) # windows
 execute_process(COMMAND ln -s ${filepath} ${sympath}) # unix
+# All options
+execute_process(COMMAND ...
+  [COMMAND ...]
+  [WORKING_DIRECTORY dir_path]
+  [RESULT_VARIABLE result_var]
+  [RESULTS_VARIABLE results_var]
+  [OUTPUT_VARIABLE out_var]
+  [ERROR_VARIABLE err_var]
+  [OUTPUT_STRIP_TRAILING_WHITESPACE]
+  [ERROR_STRIP_TRAILING_WHITESPACE]
+  [INPUT_FILE in_file]
+  [OUTPUT_FILE out_file]
+  [ERROR_FILE err_file]
+  [OUTPUT_QUIET]
+  [ERROR_QUIET]
+  [TIMEOUT secs]
+)
+# Make us of the available not CMake-specific flags such as:
+# -E: Extended features, enhanced output, error handling and expression evaluation
+# -P: Preprocessing, path specification, project settings
+# -D: Define a variable, preprocessor macro
 
 # Independent paths
 target_include_directories(<LIB_NAME> # BEFORE | SYSTEM: to prepend to existing ones or treat as system include paths
@@ -94,6 +121,33 @@ target_include_directories(<LIB_NAME> # BEFORE | SYSTEM: to prepend to existing 
     ${CMAKE_CURRENT_SOURCE_DIR}/src
   # INTERFACE adds only to INTERFACE_INCLUDE_DIRECTORIES
 )
+```
+
+#### Custom targets
+
+```cmake
+# Nonexistent target
+add_custom_target(target_name [ALL] # ALL: Target is always built, otherwise only on demand
+  [COMMAND ...] # Multiple commands are allowed, each of them preceded by the COMMAND KEYWORD
+  [COMMAND ...] # Typically running a script or a system-provided executable or so on.
+  [DEPENDS dep1 ...] # Relationship in terms of file dependencies, to indicate that the other custom commands need to be executed 1st
+  [BYPRODUCTS files ...] # To indicate that you are generating files from command, i.e. form IDL, docs, dat
+  [WORKING_DIRECTORY dir_path] # By default ${CMAKE_CURRENT_BINARY_DIR}
+  [COMMENT comment] # Log message, prefer to use command with -E echo
+  [VERBATIM] # To indicate that the only escaping does is by CMake itself
+  [USES_TERMINAL] # (CMake 3.2) To use a new terminal
+  [SOURCES src1 ...] # Only for listing files with the target so that they can be shown them in an appropriate context
+)
+
+# Existing target
+add_custom_command(TARGET target_name [PRE_BUILD|PRE_LINK|POST_BUILD] # If not specified it won't be executed if the target is already built
+  # Recommended to avoid using PRE_BUILD
+  # Same as add_custom_target(), but it doesn't create a new target
+)
+
+# Use execute_process() if commands needs to be executed in a particular time of the build stage
+
+# For OUTPUT command see section "17.3 Commands That Generate Files" in the book mentioned above
 ```
 
 #### Language requirements
