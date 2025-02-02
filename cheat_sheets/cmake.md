@@ -116,13 +116,11 @@ cmake_minimum_required(VERSION 3.22)
 
 project(proj_name VERSION 1.0.0 LANGUAGES CXX)
 
-find_package(yaml-cpp CONFIG REQUIRED)
-find_package(eigen3 CONFIG REQUIRED)
-find_package(fmt CONFIG REQUIRED)
-
+# Right after project definition
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF) # This is the default value
+# Enabling it allows GNU __attribute__((aligned)) and Microsoft __declspec(dllexport)) for instance
+set(CMAKE_CXX_EXTENSIONS OFF) # It is enabled by default
 
 # For a particular target use:
 # set_target_properties(target_name PROPERTIES
@@ -130,6 +128,14 @@ set(CMAKE_CXX_EXTENSIONS OFF) # This is the default value
 #   CXX_STANDARD_REQUIRED ON
 #   CXX_EXTENSIONS        OFF
 # )
+# If you need a more specific standard feature use:
+# target_compile_features(target_name PRIVATE|PUBLIC|INTERFACE cxx_std_20)
+# If multiple standards are set, it will enforce the stronger one
+
+
+find_package(yaml-cpp CONFIG REQUIRED)
+find_package(eigen3 CONFIG REQUIRED)
+find_package(fmt CONFIG REQUIRED)
 
 # STATUS: Incidental information, preceded by two hyphens
 # WARNING: Highlighted in red, processing will continue
@@ -206,11 +212,21 @@ target_link_libraries(${PROJECT_NAME}_public PUBLIC Eigen3::Eigen)
 
 # MODULE: Like shared but intended tob e loaded dynamically at run-time
 #         Typically plugins or optional components the user may choose to be loaded or not
-add_library(${PROJECT_NAME}_interface
+add_library(${PROJECT_NAME}_interface MODULE
   src/interface.cpp
 )
 # INTERFACE: Uses it in public headers, i.e. header-only library
 target_link_libraries(${PROJECT_NAME}_interface INTERFACE ${PROJECT_NAME}_interface fmt::fmt-header-only)
+
+# (CMake 3.9) Also exists OBJECT type (rarely used) and UNKNOWN (mostly used for imported third-party libraries)
+add_library(${PROJECT_NAME}_imported UNKNOWN IMPORTED GLOBAL)
+set(THIRD_PARTY_DIR "${CMAKE_SOURCE_DIR}/extern")
+set_target_properties(${PROJECT_NAME}_imported PROPERTIES
+  IMPORTED_LOCATION "${THIRD_PARTY_DIR}/lib"
+  INTERFACE_INCLUDE_DIRECTORIES "${THIRD_PARTY_DIR}/include"
+  IMPORTED_GLOBAL TRUE # If necessary
+)
+# More details in the book mentioned above, section 16.2. Libraries
 
 set(${PROJECT_NAME}_LIBRARIES ${PROJECT_NAME}_private ${PROJECT_NAME}_public ${PROJECT_NAME}_interface)
 foreach(projLib IN LISTS ${PROJECT_NAME}_LIBRARIES)
@@ -228,6 +244,10 @@ endforeach()
 add_executable(${PROJECT_NAME}_exec # WIN32|MACOSX_BUNDLE
   src/main.cpp
 )
+# To reference an executable that is built outside the project's CMake, GLOBAL outside somewhere in the project
+add_executable(${PROJECT_NAME}_exec IMPORTED GLOBAL)
+# read-only, it doesn't create a new build target, the alias points to the real target, alias of an alias not supported
+add_executable(${PROJECT_NAME}_exec_alias ALIAS ${PROJECT_NAME}_exec)
 
 # TODO
 
