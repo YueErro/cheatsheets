@@ -16,6 +16,8 @@ winget install Kitware.CMake
     - [CMakeLists.txt](#cmakeliststxt)
       - [Anti patterns](#anti-patterns)
       - [Cross platform pitfalls](#cross-platform-pitfalls)
+      - [Custom targets](#custom-targets)
+      - [Files](#files)
       - [Language requirements](#language-requirements)
       - [Example](#example)
 
@@ -148,6 +150,153 @@ add_custom_command(TARGET target_name [PRE_BUILD|PRE_LINK|POST_BUILD] # If not s
 # Use execute_process() if commands needs to be executed in a particular time of the build stage
 
 # For OUTPUT command see section "17.3 Commands That Generate Files" in the book mentioned above
+```
+
+#### Files
+
+```cmake
+set(BASE_PATH /base)
+set(FOOBASE_PATH /base/foo/bar)
+set(OTHER_PATH /other/place)
+
+file(RELATIVE_PATH foobar ${BASE_PATH} ${FOOBAR_PATH})  # foobar = foo/bar
+file(RELATIVE_PATH other ${BASE_PATH} ${OTHER_PATH})    # other = ../other/place
+
+# Avoid mixing forward slashes and backslashes, use CMake convention
+set(CUSTOM_PATH /usr/local/bin:/usr/bin:/bin)
+file(TO_CMAKE_PATH ${CUSTOM_PATH} custom_path) # custom_path = /usr/local/bin:/usr/bin:/bin
+
+# Copy files
+configure_file( src dest [COPYONLY|@ONLY] [ESCAPE_QUOTES]) # without the 1st option anything in the form of CMake variable will be replaced by its value
+# COPYONLY: Substitution of CMake variables in file not needed
+# @ONLY: Limit substitution to only @var@ form
+# ESCAPE_QUOTES: \" will appear as it is
+set(BAR "Some \"quoted\" value")
+configure_file(quoting.txt.in quoting.txt)
+configure_file(quoting.txt.in quoting.txt ESCAPE_QUOTES)
+# quoting.txt.in
+#   A:  @BAR@
+#   B: "@BAR@"
+# quoting.txt
+#   A:  Some "quoted" value
+#   B: "Some "quoted" value"
+# quoting_escaped.txt
+#   A:  Some \"quoted\" value
+#   B: "Some \"quoted\" value"
+set(USER_FILE whoami.txt)
+configure_file(whoami.sh.in whoami.txt)
+configure_file(whoami.sh.in whoami.txt COPYONLY)
+configure_file(whoami.sh.in whoami.txt @ONLY)
+# whoami.sh.in
+#   #!/bin/sh
+#   echo ${USER} > "@USER_FILE@"
+# whoami.sh
+#   #!/bin/sh
+#   echo  > ""
+# whoami_copyonly.sh
+#   #!/bin/sh
+#   echo ${USER} > "@USER_FILE@"
+# whoami_only.sh
+#   #!/bin/sh
+#   echo ${USER} > "whoami.txt"
+
+# If no substitution is needed, another alternative
+file(COPY|INSTALL file_path # To all the files in path don't forget the forward slash at the end
+# Preserves original timestamp unless it already exists in destination, in such a case it's ignored
+# COPY preserves original permissions but no print status messages
+# INSTALL doesn't preserve original permissions but prints status messages
+  DESTINATION dir_path
+  # Available permissions (Unix): OWNER_READ, OWNER_WRITE, OWNER_EXECUTE
+  #                               GROUP_READ, GROUP_WRITE, GROUP_EXECUTE
+  #                               WORLD_READ, WORLD_WRITE, WORLD_EXECUTE
+  #                               SETUID,     SETGID
+  # If not available in the platform, then it is ignored
+  [NO_SOURCE_PERMISSIONS|USE_SOURCE_PERMISSIONS|FILE_PERMISSIONS file_perm ...|DIRECTORY_PERMISSIONS dir_perm ...]
+  [FILES_MATCHING]
+  [PATTERN pattern|REGEX regex|] [EXCLUDE]
+  [PERMISSIONS perm ...]
+  [...]
+)
+# One more alternative
+add_custom_target(copy_target_name
+  COMMAND ${CMAKE_COMMAND} -E make_directory output/textfiles
+  COMMAND ${CMAKE_COMMAND} -E copy a.txt b.txt output/textfiles
+)
+# Don't forget to check RESULT_VARIABLE if it should stop if the command fails
+
+# Write files
+file(WRITE|APPEND file_path content) # Writes truncates
+# Example
+file(WRITE multi.txt [=[
+  1st line
+  2nd line
+]=])
+# Replace [=[ and ]=] with [[ and ]] if there is no CMake variable get the value from
+# If you want to add a condition use GENERATE
+file(GENERATE
+  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/outfile-$<CONFIG>.txt
+  INPUT ${CMAKE_CURRENT_SOURCE_DIR}/input.txt.in # If in-place use CONTENT instead of INPUT
+  CONDITION $<NOT:$<CONFIG:Release>> # Only if in release mode
+)
+
+# Read files
+file(READ file_path out_var
+  # If no more options the content will be stored in a single string
+  [OFFSET offset] # Read only from the offset specified
+  [LIMIT byte] # The maximum number of bytes to read
+  [HEX] # Store in hexadecimal representation, useful if it's a binary data
+)
+# For a more complex read use STRINGS
+file(STRINGS file_path out_var
+  [LENGTH_MAXIMUM max_bytes_line] # To exclude longer than
+  [LENGTH_MINIMUM min_bytes_line] # To exclude shorter than
+  [LIMIT_INPUT max_read_bytes]
+  [LIMIT_OUTPUT max_stored_bytes]
+  [LIMIT_COUNT max_stored_lines] # Limits the total number of lines rather than bytes
+  [REGEX regex] # For a even more complex readings
+)
+
+# File system manipulation
+file(RENAME src_path dst_path) # If it exists, like Unix mv command
+file(REMOVE file_path ...) # If file doesn't exists it doesn't report error
+file(REMOVE_RECURSE dir_path ...)
+file(MAKE_DIRECTORY dir_path ...) # Does't report error if dir already exists
+
+# To list particular files use GLOB
+file(GLOB|GLOB_RECURSE out_var
+  [LIST_DIRECTORIES true|false]
+  [RELATIVE dir_path]
+  [CONFIGURE_DEPENDS] # (CMake 3.12)
+  expression ...
+)
+# Example
+set(USR_SHARE_PATH /usr/share)
+file(GLOB_RECURSE images
+  RELATIVE ${USR_SHARE_PATH}
+  ${USR_SHARE_PATH}/*/*.png
+)
+# Recommended to use them just for debugging purposes
+
+# Download files
+file(DOWNLOAD url file_path [option ...])
+# Available options:
+#   EXPECTED_HASH MD5|SHA1|...=val: Checksum
+#   TLS_VERIFY true|false: Perform server certificate verification, if false checks for CMAKE_TLS_VERIFY
+#   TLS_CAINFO file_path: A custom Certificate Authority file
+# Upload files
+file(UPLOAD file_path url [option ...])
+# Available options in both:
+#   LOG out_var: Saves logged output from the operation
+#   SHOW_PROGRESS: Logs progress information as status messages
+#   TIMEOUT secs: Abort if the secs have elapsed
+#   INACTIVITY_TIMEOUT secs: Abort only if in some progress stage the secs have elapsed
+# (CMake 3.7):
+#   USERPWD username:password: Authentication details, passwords shouldn't be present perse
+#   HTTPHEADER: Can be used multiple times, i.e.:
+#     HTTPHEADER "Host: somebucket.s3.amazonaws.com"
+#     HTTPHEADER "Date: ${timestamp}"
+#     HTTPHEADER "Content-Type: application/x-compressed-tar"
+#     HTTPHEADER "Authorization: AWS ${s3key}:${signature}"
 ```
 
 #### Language requirements
