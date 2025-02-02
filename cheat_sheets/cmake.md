@@ -19,6 +19,7 @@ winget install Kitware.CMake
       - [Custom targets](#custom-targets)
       - [Files](#files)
       - [Language requirements](#language-requirements)
+      - [Symbols visibility](#symbols-visibility)
       - [Example](#example)
 
 ### Building
@@ -312,12 +313,56 @@ file(UPLOAD file_path url [option ...])
 For a minimum required language use `<LANG>_STANDARD_REQUIRED`.
 Many compilers support their own extensions to the language standard and `<LANG>_EXTENSIONS` controls whether those extensions are enabled or not. If extensions are enabled `<LANG>_STANDARD` must be set, otherwise the extensions will be ignored.
 
+#### Symbols visibility
+
+```cmake
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+set(CMAKE_VISIBILITY_INLINE_HIDDEN YES) # Applies to all languages
+# Windows symbols are not exported by default, whereas in GCC and Clang they are
+set(WINDOWS_EXPORT_ALL_SYMBOLS ON) # Brute force
+
+# Specify individual symbol visibilities
+target_include_directories(shared_lib_name PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
+# Writes out shared_lib_name_export.h to the current binary directory
+include(GenerateExportHeader)
+# The header must contain __declspec(...) on Windows or __attribute__(...) with name uppercase(shared_lib_name) + "_EXPORT"
+generate_export_header(shared_lib_name)
+# If a different name is desired
+generate_export_header(shared_lib_name # BASE_NAME custom_base_name
+  # If BASE_NAME: custom_base_name_export.h and uppercase(custom_base_name) + "_EXPORT"
+  EXPORT_FILE_NAME export_shared_lib_name.hpp
+  EXPORT_MACRO_NAME SHARED_LIB_NAME_API
+  # NO_EXPORT_MACRO_NAME REALLY_PRIVATE: For a deprecated symbol, uppercase(shared_lib_name) + "_DEPRECATED"
+  # NO_DEPRECATED_MACRO_NAME MACRO_NAME_DEPRECATED: Give the desired name
+)
+# For STATIC and SHARED libs
+generate_export_header(shared_lib_name)
+# Treat static libraries as being sub-groups within the shared library, outside targets only ever linking to the shared one
+target_link_libraries(shared_lib_name PRIVATE static_lib_name)
+target_include_directories(shared_lib_name PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
+target_include_directories(static_lib_name PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
+target_compile_definitions(static_lib_name PRIVATE
+  # Comes from the uppercase(BASE_NAME)
+  SHARED_LIB_NAME_EXPORTS # As not changed above it is uppercase(shared_lib_name) + "_EXPORTS"
+  # WARNING: Not sure if it is EXPORT OR EXPORTS if its by default
+)
+```
+
 #### Example
 
 ```cmake
 cmake_minimum_required(VERSION 3.22)
 
+# CMake 3.12:
+#   CMAKE_PROJECT_VERSION
+#     CMAKE_PROJECT_VERSION_MAJOR
+#     CMAKE_PROJECT_VERSION_MINOR
+#     CMAKE_PROJECT_VERSION_PATCH
+#     CMAKE_PROJECT_VERSION_TWEAK
 project(proj_name VERSION 1.0.0 LANGUAGES CXX)
+
+# To add MACROS coming from CMake use:
+add_definitions(-DCUSTOM_MACRO=\"${PROJECT_NAME}\") # Use it in the code as CUSTOM_MACRO
 
 # Right after project definition
 set(CMAKE_CXX_STANDARD 20)
