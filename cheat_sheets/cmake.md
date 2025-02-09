@@ -21,6 +21,7 @@ winget install Kitware.CMake
       - [Language requirements](#language-requirements)
       - [Symbols visibility](#symbols-visibility)
       - [Example](#example)
+      - [`ctest`](#ctest)
 
 ### Building
 
@@ -49,15 +50,27 @@ cmake --install . --config <Release/Debug/MinSizeRel/RelWithDebInfo>
 #### App
 
 ```bash
-.\<Debug/Release/MinSizeRel/RelWithDebInfo>/<EXECUTABLE>.exe
+.\<Debug/Release/MinSizeRel/RelWithDebInfo>/<EXECUTABLE>
 ```
 
 #### Tests
 
 ```bash
-ctest
+# If you need to re-build a particular test
+cmake --build build --config <Debug/Release/MinSizeRel/RelWithDebInfo> --target <TEST_EXECUTABLE>
+# Execute all the tests:
+#   -V: Verbosity instead of only on failure
+#   -N: Print existing tests
+#   -R: Include tests
+#   -E: Exclude tests
+#   -I: Include tests by number rather name
+#   -L: Include tests by label
+#   -LE: Exclude tests by label
+#   --repeat-until-fail num
+#   -j num: Parallel execution
+ctest --output-on-failure --test-dir build -C <Debug/Release/MinSizeRel/RelWithDebInfo>
 # Or directly specify the test executable
-.\<Debug/Release/MinSizeRel/RelWithDebInfo>/<TEST_EXECUTABLE>.exe
+.\<Debug/Release/MinSizeRel/RelWithDebInfo>/<TEST_EXECUTABLE>
 ```
 
 ### CMakeLists.txt
@@ -380,7 +393,7 @@ set(CMAKE_CXX_EXTENSIONS OFF) # It is enabled by default
 # target_compile_features(target_name PRIVATE|PUBLIC|INTERFACE cxx_std_20)
 # If multiple standards are set, it will enforce the stronger one
 
-
+# More details in the book mentioned above, section 23.5. Finding Packages
 find_package(yaml-cpp CONFIG REQUIRED)
 find_package(eigen3 CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
@@ -497,6 +510,33 @@ add_executable(${PROJECT_NAME}_exec IMPORTED GLOBAL)
 # read-only, it doesn't create a new build target, the alias points to the real target, alias of an alias not supported
 add_executable(${PROJECT_NAME}_exec_alias ALIAS ${PROJECT_NAME}_exec)
 
-# TODO
+if(BUILD_TESTING)
+  enable_testing()
+  # See ctest section
+endif()
+
+```
+
+#### `ctest`
+
+```cmake
+include(CTest)
+
+add_executable(${PROJECT_NAME}_test test/proj_name.test.cpp)
+# It also accepts:
+#   CONFIGURATIONS Debug|RelWithDebInfo|""|... --> "" means when no configuration is specified
+#   WORKING_DIRECTORY <path> --> To make the test run in some other location, highly recommended to be an absolute path
+add_test(${PROJECT_NAME}.test ${PROJECT_NAME}_test) # Executed for all configurations from CMAKE_CURRENT_BINARY_DIR
+set_tests_properties(${PROJECT_NAME}.test PROPERTIES
+  # Disable this particular test (can be done from command line as explained in the Tests section above)
+  DISABLED YES
+  # Marked as failed if it hasn't finished in that time
+  TIMEOUT secs
+  # Different tests can be labeled with the same name to be executed/excluded with -L and -LE respectively
+  LABELS "test_label"
+  # Condition to start executing this one in parallel executions (-j)
+  RESOURCE_LOCK rsrc # For multiple resources separate them with ;
+)
+
 
 ```
