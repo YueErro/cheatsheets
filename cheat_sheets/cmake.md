@@ -7,7 +7,10 @@ sudo apt install cmake
 winget install Kitware.CMake
 ```
 
+## Table of contents
+
 - [cmake cheat sheet](#cmake-cheat-sheet)
+  - [Table of contents](#table-of-contents)
     - [Building](#building)
     - [Installing](#installing)
     - [Running](#running)
@@ -22,7 +25,7 @@ winget install Kitware.CMake
       - [Language requirements](#language-requirements)
       - [Symbols visibility](#symbols-visibility)
       - [Example](#example)
-      - [`ctest`](#ctest)
+      - [`ctest` with GoogleTest](#ctest-with-googletest)
 
 ### Building
 
@@ -35,7 +38,7 @@ cmake -G <GENERATOR> -T <BUILD_TOOLS> -A <x64/Win32> -DBUILD_TESTING=<ON/OFF> ..
 # Release: With full optimization and no debug information
 # RelWithDebInfo: Compromise of the previous two
 # MinRizeRel: Optimized for size rather than speed and no debug information is created, used for embedded devices
-cmake --build . --config <Release/Debug/MinSizeRel/RelWithDebInfo>
+cmake --build . --config <Release|Debug|MinSizeRel|RelWithDebInfo>
 # If you want to build it again after making changes in the `CMakeLists.txt`, you can clean the target
 cmake --build . --target clean
 ```
@@ -43,7 +46,7 @@ cmake --build . --target clean
 ### Installing
 
 ```bash
-cmake --install . --config <Release/Debug/MinSizeRel/RelWithDebInfo>
+cmake --install . --config <Release|Debug|MinSizeRel|RelWithDebInfo>
 ```
 
 ### Running
@@ -51,14 +54,14 @@ cmake --install . --config <Release/Debug/MinSizeRel/RelWithDebInfo>
 #### App
 
 ```bash
-.\<Debug/Release/MinSizeRel/RelWithDebInfo>/<EXECUTABLE>
+.\<Debug|Release|MinSizeRel|RelWithDebInfo>/<EXECUTABLE>
 ```
 
 #### Tests
 
 ```bash
 # If you need to re-build a particular test
-cmake --build build --config <Debug/Release/MinSizeRel/RelWithDebInfo> --target <TEST_EXECUTABLE>
+cmake --build build --config <Debug|Release|MinSizeRel|RelWithDebInfo> --target <TEST_EXECUTABLE>
 # Execute all the tests:
 #   -V: Verbosity instead of only on failure
 #   -N: Print existing tests
@@ -69,33 +72,43 @@ cmake --build build --config <Debug/Release/MinSizeRel/RelWithDebInfo> --target 
 #   -LE: Exclude tests by label
 #   --repeat-until-fail num
 #   -j num: Parallel execution
-ctest --output-on-failure --test-dir build -C <Debug/Release/MinSizeRel/RelWithDebInfo>
+#   --gtest_filter="TestSuite.TestCase": Execute given test case from test suite, * is allowed
+ctest --output-on-failure --test-dir build -C <Debug|Release|MinSizeRel|RelWithDebInfo>
 # Or directly specify the test executable
-.\<Debug/Release/MinSizeRel/RelWithDebInfo>/<TEST_EXECUTABLE>
+.\<Debug|Release|MinSizeRel|RelWithDebInfo>/<TEST_EXECUTABLE>
 # It is also possible to build and test with ctest
 # Checkout the 24.7. Build And Test Mode section in the book mentioned above
 # Test results report (CDash below)
+#   To attach a build note use -A <note.txt> with the Submit step
+#   To pass the XML output file not compressed use --no-compress-output
+#   Several actions can be specified adding as many as -T needed
+ctest -M <MODE> -T <ACTION> --track <NAME>
 ```
 
 #### CDash
 
 Web-based dashboard which collects results from a SW build and test pipeline driven by `ctest`.
 There are three important concepts that tie together how CTest and CDash execute pipelines and report results:
-  * Steps (or actions): sequence of actions that a pipeline performs
-    * Start
-    * Update
-    * Configure
-    * Build
-    * Test
-    * Coverage
-    * MemCheck
-    * Submit
-  * Models (or modes): define certain behaviors, such as whether or not to continue with later step after a particular step fails
-    * Nightly: intended to be invoked once per day, usually by a job during a time when the executing machine is less busy and includes all the steps above except *MemCheck*, if the *Update* step fails, the rest of the steps will still be executed
-    * Continuous: similar to *Nightly* except that it's intended to be run multiple times a day as needed, normally in response to a change being committed and defines the same steps, but if the *Update* fails, the later steps will not be executed
-    * Experimental: hoc experiments executed by developers (this is the default model set) as needed and it includes all steps except *Update* and *MemCheck*
-  * Tracks: controls which group the pipeline results will be shown under in the dashboard results, the *Coverage* and *MemCheck* steps are shown in *Coverage* and *Dynamic Analysis* dedicated groups respectively
 
+- Steps (or actions): sequence of actions that a pipeline performs
+  - Start
+  - Update
+  - Configure
+  - Build
+  - Test
+  - Coverage
+  - MemCheck
+    - AddressSanitizer
+    - LeakSanitizer
+    - MemorySanitizer
+    - ThreadSanitizer
+    - UndefinedBehaviorSanitizer
+  - Submit
+- Models (or modes): define certain behaviors, such as whether or not to continue with later step after a particular step fails
+  - Nightly: intended to be invoked once per day, usually by a job during a time when the executing machine is less busy and includes all the steps above except *MemCheck*, if the *Update* step fails, the rest of the steps will still be executed
+  - Continuous: similar to *Nightly* except that it's intended to be run multiple times a day as needed, normally in response to a change being committed and defines the same steps, but if the *Update* fails, the later steps will not be executed
+  - Experimental: hoc experiments executed by developers (this is the default model set) as needed and it includes all steps except *Update* and *MemCheck*
+- Tracks: controls which group the pipeline results will be shown under in the dashboard results, the *Coverage* and *MemCheck* steps are shown in *Coverage* and *Dynamic Analysis* dedicated groups respectively
 
 ### CMakeLists.txt
 
@@ -536,17 +549,21 @@ add_executable(${PROJECT_NAME}_exec_alias ALIAS ${PROJECT_NAME}_exec)
 
 if(BUILD_TESTING)
   enable_testing()
+  include(CTest)
   # See ctest section
 endif()
 
 ```
 
-#### `ctest`
+#### `ctest` with GoogleTest
 
 ```cmake
-include(CTest)
+find_package(GTest REQUIRED)
+
+include(CTest) # In parent CMakeLists.txt as well if using add_subdirectory()
 
 add_executable(${PROJECT_NAME}_test test/proj_name.test.cpp)
+target_link_libraries(${PROJECT_NAME}_test PRIVATE GTest::GTest)
 # It also accepts:
 #   CONFIGURATIONS Debug|RelWithDebInfo|""|... --> "" means when no configuration is specified
 #   WORKING_DIRECTORY <path> --> To make the test run in some other location, highly recommended to be an absolute path
@@ -563,5 +580,25 @@ set_tests_properties(${PROJECT_NAME}.test PROPERTIES
   # To control the test order execution
   DEPENDS other_test_name # For multiple dependencies separate them with ;
   # For test fixtures (CMake 3.7) see section 24.5. Test Dependencies in the book mentioned above
+  # Record additional information about the failure
+  ATTACHED_FILES_ON_FAIL
+    ${CMAKE_CURRENT_BINARY_DIR}/generated.c
+    ${CMAKE_CURRENT_BINARY_DIR}/generated.h
 )
+
+```
+
+`CTestConfig.cmake` example:
+
+```cmake
+set(CTEST_PROJECT_NAME "proj_name")
+
+set(CTEST_NIGHTLY_START_TIME "01:00:00 UTC")
+# CDash server details to submit to
+set(CTEST_DROP_METHOD "http")
+set(CTEST_DROP_SITE "my.cdash.org")
+set(CTEST_DROP_LOCATION "/submit.php?project=${CTEST_PROJECT_NAME}")
+set(CTEST_DROP_SITE_CDASH YES)
+# Optional, but recommended so that command lines can be seen in the CDash logs
+set(CTEST_USE_LAUNCHERS YES)
 ```
