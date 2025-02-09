@@ -13,6 +13,7 @@ winget install Kitware.CMake
     - [Running](#running)
       - [App](#app)
       - [Tests](#tests)
+      - [CDash](#cdash)
     - [CMakeLists.txt](#cmakeliststxt)
       - [Anti patterns](#anti-patterns)
       - [Cross platform pitfalls](#cross-platform-pitfalls)
@@ -71,7 +72,30 @@ cmake --build build --config <Debug/Release/MinSizeRel/RelWithDebInfo> --target 
 ctest --output-on-failure --test-dir build -C <Debug/Release/MinSizeRel/RelWithDebInfo>
 # Or directly specify the test executable
 .\<Debug/Release/MinSizeRel/RelWithDebInfo>/<TEST_EXECUTABLE>
+# It is also possible to build and test with ctest
+# Checkout the 24.7. Build And Test Mode section in the book mentioned above
+# Test results report (CDash below)
 ```
+
+#### CDash
+
+Web-based dashboard which collects results from a SW build and test pipeline driven by `ctest`.
+There are three important concepts that tie together how CTest and CDash execute pipelines and report results:
+  * Steps (or actions): sequence of actions that a pipeline performs
+    * Start
+    * Update
+    * Configure
+    * Build
+    * Test
+    * Coverage
+    * MemCheck
+    * Submit
+  * Models (or modes): define certain behaviors, such as whether or not to continue with later step after a particular step fails
+    * Nightly: intended to be invoked once per day, usually by a job during a time when the executing machine is less busy and includes all the steps above except *MemCheck*, if the *Update* step fails, the rest of the steps will still be executed
+    * Continuous: similar to *Nightly* except that it's intended to be run multiple times a day as needed, normally in response to a change being committed and defines the same steps, but if the *Update* fails, the later steps will not be executed
+    * Experimental: hoc experiments executed by developers (this is the default model set) as needed and it includes all steps except *Update* and *MemCheck*
+  * Tracks: controls which group the pipeline results will be shown under in the dashboard results, the *Coverage* and *MemCheck* steps are shown in *Coverage* and *Dynamic Analysis* dedicated groups respectively
+
 
 ### CMakeLists.txt
 
@@ -536,7 +560,8 @@ set_tests_properties(${PROJECT_NAME}.test PROPERTIES
   LABELS "test_label"
   # Condition to start executing this one in parallel executions (-j)
   RESOURCE_LOCK rsrc # For multiple resources separate them with ;
+  # To control the test order execution
+  DEPENDS other_test_name # For multiple dependencies separate them with ;
+  # For test fixtures (CMake 3.7) see section 24.5. Test Dependencies in the book mentioned above
 )
-
-
 ```
