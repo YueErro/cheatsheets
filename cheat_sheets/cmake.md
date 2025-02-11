@@ -167,11 +167,14 @@ execute_process(COMMAND ...
 target_include_directories(<LIB_NAME> # BEFORE | SYSTEM: to prepend to existing ones or treat as system include paths
   # Adds header search paths to INCLUDE_DIRECTORIES and INTERFACE_INCLUDE_DIRECTORIES
   PUBLIC
-    $<INSTALL_INTERFACE:include/<LIB_PATH>>
+    # Uses when building
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/<LIB_PATH>>
+    # Uses when installing
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   # Adds only to INCLUDE_DIRECTORIES
   PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
   # INTERFACE adds only to INTERFACE_INCLUDE_DIRECTORIES
 )
 ```
@@ -491,6 +494,7 @@ else()
 # Version numbers: VERSION_LESS, VERSION_GREATER, VERSION_EQUAL, VERSION_LESS_EQUAL, VERSION_GREATER_EQUAL
 endif()
 
+include(GNUInstallDirs)
 # STATIC: Static library, on Windows .lib and on Unix .a
 add_library(${PROJECT_NAME}_private STATIC
   src/private.cpp
@@ -500,6 +504,10 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
 )
 # PRIVATE: Uses it internally in private implementation
 target_link_libraries(${PROJECT_NAME}_private PRIVATE yaml-cpp)
+target_include_directories(${PROJECT_NAME}_private
+  PRIVATE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+)
 
 # SHARED: Dynamic linked library, on Windows .dll and on Unix .so
 add_library(${PROJECT_NAME}_public SHARED
@@ -507,6 +515,12 @@ add_library(${PROJECT_NAME}_public SHARED
 )
 # PUBLIC: Uses it internally in private implementation, but also in public headers
 target_link_libraries(${PROJECT_NAME}_public PUBLIC Eigen3::Eigen)
+target_include_directories(${PROJECT_NAME}_public
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
 
 # MODULE: Like shared but intended tob e loaded dynamically at run-time
 #         Typically plugins or optional components the user may choose to be loaded or not
@@ -515,6 +529,12 @@ add_library(${PROJECT_NAME}_interface MODULE
 )
 # INTERFACE: Uses it in public headers, i.e. header-only library
 target_link_libraries(${PROJECT_NAME}_interface INTERFACE ${PROJECT_NAME}_interface fmt::fmt-header-only)
+target_include_directories(${PROJECT_NAME}_interface
+  INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
 
 # (CMake 3.9) Also exists OBJECT type (rarely used) and UNKNOWN (mostly used for imported third-party libraries)
 add_library(${PROJECT_NAME}_imported UNKNOWN IMPORTED GLOBAL)
@@ -525,6 +545,69 @@ set_target_properties(${PROJECT_NAME}_imported PROPERTIES
   IMPORTED_GLOBAL TRUE # If necessary
 )
 # More details in the book mentioned above, section 16.2. Libraries
+
+# Needs GNUInstallDirs and defines CMAKE_INSTALL_*:
+#   BINDIR: executables, scripts and symlinks, defaults to bin
+#   SBINDIR: system admin use, defaults to sbin
+#   LIBDIR: libraries and object files, defaults to lib
+#   LIBEXECDIR: executables run via launch scripts or symlinks, defaults to libexec
+#   INCLUDEDIR: header files, defaults to include
+#   DATAROOTDIR: read-only architecture-independent data, defaults to share
+#   DATADIR: read-only data such as images and other resources, defaults to DATAROOTDIR
+#   MANDIR: Documentation in the man format, defaults to DATAROOTDIR/man
+#   DOCDIR: Generic documentation, defaults to DATAROOTDIR/doc/PROJECT_NAME
+install(TARGETS ${PROJECT_NAME}_public ${PROJECT_NAME}_private
+  # If targets are executables there is no need to specify the entity type
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} # bin, dll
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} # shared libs
+  ARCHIVE
+    DESTINATION ${CMAKE_INSTALL_LIBDIR} # static libs
+    NAMELINK_ONLY | NAMELINK_SKIP # only: install nothing; skip: will install the real library
+    COMPONENT <name> # logical grouping used mainly for packaging
+    # PERMISSIONS same as for file (COPY)
+    # CONFIGURATIONS Debug Release MinSizeRel RelWithDebInfo
+  INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+# More entity types:
+#   OBJECTS: object libraries (CMake 3.9)
+#   FRAMEWORK: On Apple shared or static frameworks
+#   BUNDLE: On apple bundles
+#   PUBLIC_HEADER: Non-Apple files listed in PUBLIC_HEADER property
+#   PRIVATE_HEADER: Non-Apple files listed in PRIVATE_HEADER property
+#   RESOURCE: Non-Apple files in RESOURCE property
+
+# For more details about RPATH and Apple targets see section 25.2.2. RPATH and 25.2.3. Apple-specific Targets respectively in the book mentioned above
+
+# Create targets cmake file
+install(EXPORT ${PROJECT_NAME}-targets # for Android use EXPORT_ANDROID_MK
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+  # FILE name.cmake --> by default export name
+  # NAMESPACE ${PROJECT_NAME}::
+  # Rarely used:
+  # PERMISSIONS permissions...
+  # COMPONENT component
+  # EXCLUDE_FROM_ALL
+  # CONFIGURATIONS configs...
+)
+# It can be done the same for files and programs (FILES|PROGRAMS files...), the later ones just adds execute permissions by default
+# Also for directories something like:
+# install(DIRECTORY include/) --> without the last / the destination would be include/include
+#   DESTINATION include
+#   FILE_PERMISSIONS permissions...
+#   DIRECTORY_PERMISSIONS permissions...
+#   FILES_MATCHING PATTERN "*.hpp"
+# )
+
+# If copying things into the install area isn't enough, checkout 25.5. Custom Install Logic section in the book mentioned above
+
+# Install dependencies (needs GNUInstallDirs)
+set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION ${CMAKE_INSTALL_LIBDIR})
+set(CMAKE_INSTALL_SYSTEM_RUNTIME_COMPONENT ${PROJ_NAME}_runtime)
+# If a project wants to define the install commands itself as well then:
+# set(CMAKE_INSTALL_SYSTEM_RUNTIME_COMPONENT MyProj_Runtime)
+# and afterwards:
+include(InstallRequiredSystemLibraries)
+# and finally the custom installs
 
 set(${PROJECT_NAME}_LIBRARIES ${PROJECT_NAME}_private ${PROJECT_NAME}_public ${PROJECT_NAME}_interface)
 foreach(projLib IN LISTS ${PROJECT_NAME}_LIBRARIES)
@@ -552,7 +635,6 @@ if(BUILD_TESTING)
   include(CTest)
   # See ctest section
 endif()
-
 ```
 
 #### `ctest` with GoogleTest
