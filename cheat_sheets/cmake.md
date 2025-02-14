@@ -576,9 +576,10 @@ install(TARGETS ${PROJECT_NAME}_public ${PROJECT_NAME}_private
 #   PRIVATE_HEADER: Non-Apple files listed in PRIVATE_HEADER property
 #   RESOURCE: Non-Apple files in RESOURCE property
 
-# For more details about RPATH and Apple targets see section 25.2.2. RPATH and 25.2.3. Apple-specific Targets respectively in the book mentioned above
+# For more details about RPATH and Apple targets see section 25.2.2 and 25.2.3 in the book mentioned above
 
-# Create targets cmake file
+# Create targets cmake file, config package file ${PROJECT_NAME}-config.cmake at <prefix>/cmake/${PROJECT_NAME} (also needs GNUInstallDirs)
+include(CMakePackageConfigHelpers)
 install(EXPORT ${PROJECT_NAME}-targets # for Android use EXPORT_ANDROID_MK
   DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
   # FILE name.cmake --> by default export name
@@ -589,6 +590,31 @@ install(EXPORT ${PROJECT_NAME}-targets # for Android use EXPORT_ANDROID_MK
   # EXCLUDE_FROM_ALL
   # CONFIGURATIONS configs...
 )
+# If the project wishes to support some of its own components being optional check out 25.7.1. Config Files For CMake Projects section in the book mentioned above
+# In order to be able to find the package in other project with version constrain ${PROJECT_NAME}-config-version.cmake is needed
+write_basic_package_version_file( ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake
+  VERSION ${CMAKE_PROJECT_VERSION} # Whatever x.y.z version, this is the default value if not specified
+  COMPATIBILITY SameMajorVersion # Other options: AnyNewerVersion, SameMinorVersion
+)
+# To refer to installed files relative to the base install location rather than the location of the config file itself
+set(INSTALL_DEST ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+configure_package_config_file(cmake/${PROJECT_NAME}-config.cmake.in # input file wherever path you have it in your project (uses @PACKAGE_INIT@, @PACKAGE_<var>@, ...)
+  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake # output file
+  INSTALL_DESTINATION ${INSTALL_DEST} # by default to INSTALL_PREFIX or CMAKE_INSTALL_PREFIX
+  PATH_VARS cmake # optional as well as the ones below
+  NO_SET_AND_CHECK_MACRO # Projects providing imported targets should not need this macro, thus need to define this
+  # NO_CHECK_REQUIRED_COMPONENTS_MACRO
+)
+install(
+  FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake
+  DESTINATION
+    ${INSTALL_DEST}
+    # COMPONENT ...
+)
+# For config files for non-cmake project see 25.7.2 section in the book mentioned above
+
 # It can be done the same for files and programs (FILES|PROGRAMS files...), the later ones just adds execute permissions by default
 # Also for directories something like:
 # install(DIRECTORY include/) --> without the last / the destination would be include/include
