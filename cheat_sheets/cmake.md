@@ -17,6 +17,7 @@ winget install Kitware.CMake
       - [App](#app)
       - [Tests](#tests)
       - [CDash](#cdash)
+      - [Packing](#packing)
     - [CMakeLists.txt](#cmakeliststxt)
       - [Anti patterns](#anti-patterns)
       - [Cross platform pitfalls](#cross-platform-pitfalls)
@@ -26,6 +27,7 @@ winget install Kitware.CMake
       - [Symbols visibility](#symbols-visibility)
       - [Example](#example)
       - [`ctest` with GoogleTest](#ctest-with-googletest)
+      - [Packaging with `cpack`](#packaging-with-cpack)
 
 ### Building
 
@@ -109,6 +111,25 @@ There are three important concepts that tie together how CTest and CDash execute
   - Continuous: similar to *Nightly* except that it's intended to be run multiple times a day as needed, normally in response to a change being committed and defines the same steps, but if the *Update* fails, the later steps will not be executed
   - Experimental: hoc experiments executed by developers (this is the default model set) as needed and it includes all steps except *Update* and *MemCheck*
 - Tracks: controls which group the pipeline results will be shown under in the dashboard results, the *Coverage* and *MemCheck* steps are shown in *Coverage* and *Dynamic Analysis* dedicated groups respectively
+
+#### Packing
+
+Setting up and executing packaging is handled in a similar way to testing with `cpack`. Available package generators:
+  - Simple archives: The most basic of all the package formats, since they are just an archive of
+                      files that the user is expected to unpack somewhere on their file system.
+                      Such as zip, tarball, bz2, etc.
+  - UI installers: GUI with the desired components to be installed.
+                    Windows: NSIS, WIX, IFW
+                    MaC: DragNDrop, productbuild, IFW
+                    Linux: IFW
+  - Non-UI packages: Specific package manager like DEB in linux
+  - Product-specific packages: NuGet for .NET in CMake 3.12
+
+```bash
+# G: generator, choose ona or multiple
+# C: build configuration
+cpack -G "ZIP;WIX;TGZ;RPM;" -C <Release|Debug|MinSizeRel|RelWithDebInfo> --config CPackSourceConfig.cmake
+```
 
 ### CMakeLists.txt
 
@@ -415,7 +436,7 @@ cmake_minimum_required(VERSION 3.22)
 project(proj_name VERSION 1.0.0 LANGUAGES CXX)
 
 # To add MACROS coming from CMake use:
-add_definitions(-DCUSTOM_MACRO=\"${PROJECT_NAME}\") # Use it in the code as CUSTOM_MACRO
+add_definitions(-DCUSTOM_MACRO="${PROJECT_NAME}") # Use it in the code as CUSTOM_MACRO
 
 # Right after project definition
 set(CMAKE_CXX_STANDARD 20)
@@ -709,4 +730,68 @@ set(CTEST_DROP_LOCATION "/submit.php?project=${CTEST_PROJECT_NAME}")
 set(CTEST_DROP_SITE_CDASH YES)
 # Optional, but recommended so that command lines can be seen in the CDash logs
 set(CTEST_USE_LAUNCHERS YES)
+```
+
+#### Packaging with `cpack`
+
+```cmake
+set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
+set(CPACK_PACKAGE_VENDOR <COMPANY>)
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "This is a description of the project package")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY ${CPACK_PACKAGE_NAME})
+set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
+set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
+set(CPACK_VERBATIM_VARIABLES YES) # Configuration files properly escaped
+# Filter out parts of the source tree
+set(CPACK_SOURCE_IGNORE_FILES
+  /\\.git/
+  \\.swp
+  \\.orig
+  /CMakeLists\\.txt\\.user
+  /privateDir/
+)
+# For a longer description of the project
+set(CPACK_PACKAGE_DESCRIPTION_FILE ${CMAKE_CURRENT_LIST_DIR}/Description.txt)
+# Welcome message in the opening screen
+set(CPACK_RESOURCE_FILE_WELCOME ${CMAKE_CURRENT_LIST_DIR}/Welcome.txt)
+set(CPACK_RESOURCE_FILE_LICENSE ${CMAKE_CURRENT_LIST_DIR}/License.txt)
+# Additional information before starting the installation
+set(CPACK_RESOURCE_FILE_README ${CMAKE_CURRENT_LIST_DIR}/Readme.txt)
+set(CPACK_PACKAGE_ICON <PATH>) # Some generators ignore this variable
+include(CPack)
+
+# In order to see the configuration of each generator see 26.4.Z sections respectively in the book mentioned above
+set(CPACK_GENERATOR ZIP WIX) # Win 32
+# Windows: NuGet
+# Apple: TGZ
+# Linux: DEB
+
+# For components implementation check out section 26.2 of the book mentioned above
+cpack_add_component(<component_name>
+  # DISPLAY_NAME name --> recommended
+  # DESCRIPTION description --> recommended
+  # DEPENDS component1 ... --> if this component depends on other components
+  # GROUP group --> see cpack_add_component_group() below
+  # REQUIRED|DISABLED --> If not defined the user decides
+  # HIDDEN --> Non-required but hidden will be disabled and only installed if another enabled component depends on it
+  # INSTALL_TYPES type1 ... --> see cpack_add_install_type()
+  # DOWNLOADED --> downloaded on demand rather than being included in the package directly
+  # ARCHIVE_FILE archiveFileName --> customize the file name of the downloadable component, only in IFW generator
+  # PLIST plistFileName --> CMake 3.9, only in productbuild generator
+)
+cpack_add_component_group(<group_name>
+  # DISPLAY_NAME name --> recommended
+  # DESCRIPTION description --> recommended
+  # PARENT_GROUP parent --> nested groups
+  # EXPANDED --> will appear expanded in the GUI
+  # BOLD_TITLE --> will appear in bold in the GUI
+)
+# Type names are commonly full minimal or default
+cpack_add_install_type(<type_name>
+# DISPLAY_NAME uiName --> optional
+)
+# More details about components check out section 26.2 of the book mentioned above
+
+# For multi configuration packages (different build configurations) check out section 26.3 of the book mentioned above
 ```
