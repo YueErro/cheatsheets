@@ -318,7 +318,7 @@ git submodule update --init --recursive
 # Push to the submodule
 git add <submodule>/<file>
 git commit
-git push origin HEAR:master
+git push origin HEAD:master
 # Push to the repository
 git add <submodule>
 git commit
