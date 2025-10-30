@@ -87,13 +87,13 @@ git pull
 ### Stage/Unstage
 
 ```sh
-# Discard all before staging
+# From root, discard all before staging
 git checkout .
 # Discard line by line before staging
 git checkout -p
 # Discard untracked files
 git clean -f
-# Stage all the changes
+# From root, stage all the changes
 git add .
 # Stage the desired lines
 git add -p
